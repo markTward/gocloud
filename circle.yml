@@ -3,10 +3,10 @@
 #     GOPATH:  "${HOME}/.go_workspace"
 #     WORKDIR: "${GOPATH}/src/github.com/markTward/gcloud"
 
-test:
-  pre:
-    - env | sort
-    - pwd
-
-  override:
-    - go test -v -race ./...
+# test:
+#   pre:
+#     - env | sort
+#     - pwd
+#
+#   override:
+#     - go test -v -race ./...
