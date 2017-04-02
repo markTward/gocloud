@@ -4,6 +4,10 @@ machine:
     WORKDIR: "${GOPATH}/src/github.com/markTward/gcloud"
 
 test:
-  override:
+  pre:
     - cd "${WORKDIR}"
-    - go test -v ./helloworld/mock/hw_test.go
+    - ls -la .
+    - go env
+    
+  override:
+    - go test -v -race ./...
