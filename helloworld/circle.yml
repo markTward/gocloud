@@ -1,13 +1,12 @@
 machine:
   environment:
-    GOPATH:  "/go"
+    GOPATH:  "${HOME}/.go_workspace"
     WORKDIR: "${GOPATH}/src/github.com/markTward/gcloud"
 
 test:
   pre:
-    - cd "${WORKDIR}"
-    - ls -la .
     - go env
-    
+    - pwd
+
   override:
     - go test -v -race ./...
