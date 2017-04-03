@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	addressDB   = "greeter-grpc:8000"
+	addressDB   = "gocloud-grpc:8000"
 	defaultName = "World!"
 	timeout     = 1
 )

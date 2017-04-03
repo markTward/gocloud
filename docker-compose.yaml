@@ -2,14 +2,14 @@ version: "3"
 
 services:
   # greeter-grpc is used as network alias and must match addressDB value in pkg handlers
-  greeter-grpc:
+  gocloud-grpc:
     image: marktward/gocloud:latest
-    command: greeter_server
+    command: gocloud grpc serve
     expose:
       - 8000
 
-  client:
+  restapi:
     image: marktward/gocloud:latest
     ports:
       - 8010:8010
-    command: greeter_client
+    command: gocloud restapi start
