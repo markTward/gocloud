@@ -1,10 +1,10 @@
-package greeter_client
+package restapi
 
 import (
 	"log"
 	"net/http"
 
-	"github.com/markTward/gocloud/greeter_client/handlers"
+	"github.com/markTward/gocloud/restapi/handlers"
 )
 
 const (

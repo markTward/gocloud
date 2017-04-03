@@ -1,4 +1,4 @@
-package greeter_server
+package grpc
 
 import (
 	"log"
