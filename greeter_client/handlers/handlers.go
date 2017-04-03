@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	pb "github.com/markTward/gocloud/helloworld/proto"
+	pb "github.com/markTward/gocloud/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/markTward/gocloud/helloworld/greeter_client/handlers"
+	"github.com/markTward/gocloud/greeter_client/handlers"
 )
 
 const (

@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/golang/protobuf/proto"
-	hwmock "github.com/markTward/gocloud/helloworld/mock/mock_helloworld"
-	helloworld "github.com/markTward/gocloud/helloworld/proto"
+	hwmock "github.com/markTward/gocloud/mock/mock_helloworld"
+	helloworld "github.com/markTward/gocloud/proto"
 	"golang.org/x/net/context"
 )
 

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/markTward/gocloud/helloworld/proto"
+	pb "github.com/markTward/gocloud/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
