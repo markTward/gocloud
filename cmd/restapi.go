@@ -23,16 +23,11 @@ import (
 // restapiCmd represents the restapi command
 var restapiCmd = &cobra.Command{
 	Use:   "restapi",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "restapi service management",
+	Long:  `A longer description of restapi service management`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
-		fmt.Println("restapi called")
+		// TODO: how to show nested subcommands
+		fmt.Println("TODO: show nested subcommands")
 	},
 }
 
