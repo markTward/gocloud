@@ -1,4 +1,4 @@
-package main
+package greeter_server
 
 import (
 	"log"
@@ -27,7 +27,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: msg}, nil
 }
 
-func main() {
+func Start() {
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

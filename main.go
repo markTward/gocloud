@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
 
-func ThisIsGcloud() {
-	fmt.Println("This is gcloud!")
+	"github.com/markTward/gocloud/cmd"
+)
+
+func main() {
+	if err := cmd.RootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(-1)
+	}
 }

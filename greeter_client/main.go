@@ -1,4 +1,4 @@
-package main
+package greeter_client
 
 import (
 	"log"
@@ -11,7 +11,8 @@ const (
 	address = ":8010"
 )
 
-func main() {
+func Start() {
+	//TODO: handle 404 and other http errors
 	http.HandleFunc("/hw", handlers.HelloWorld)
 	http.HandleFunc("/healthcheck", handlers.HealthCheck)
 	log.Fatal(http.ListenAndServe(address, nil))
