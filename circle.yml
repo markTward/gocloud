@@ -9,13 +9,25 @@ machine:
     - env | sort
     - docker info
 
+dependencies:
+  pre:
+    - echo $DOCKER_PASS | base64 --decode > ${HOME}/docker_pass
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)"
+
 deployment:
-  feature:
-    branch: [dev]
+  production:
+    branch: master
     commands:
-      - echo $DOCKER_PASS | base64 --decode > ${HOME}/docker_pass
       - docker build -t ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
       - docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:latest
       - docker images
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)"
+      - docker push ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF
+      - docker push ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:latest
+
+  dev:
+    branch: dev
+    commands:
+      - docker build -t ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
+      - docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:latest
+      - docker images
       - docker push ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF
