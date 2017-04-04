@@ -5,21 +5,18 @@ machine:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
   services:
     - docker
-
-
-dependencies:
-  override:
+  post:
     - env | sort
     - docker info
-    - docker build -t ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
-    - docker images
 
 deployment:
   production:
     branch: master
     commands:
       - echo $DOCKER_PASSWORD | base64 --decode > ${HOME}/docker_pass
-      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)" docker.io
-      - docker tag docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest
+      - docker build -t ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
+      - docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:latest
       - docker images
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)"
       - docker push ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF
+      - docker push ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:latest
