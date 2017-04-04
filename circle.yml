@@ -1,12 +1,26 @@
-# machine:
-#   environment:
-#     GOPATH:  "${HOME}/.go_workspace"
-#     WORKDIR: "${GOPATH}/src/github.com/markTward/gcloud"
+machine:
+  environment:
+    VCS_REF: $(echo $CIRCLE_SHA1 | cut -c -7)
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
+    - env | sort
+  services:
+    docker
+  post:
+    docker info
 
-# test:
+# dependencies:
 #   pre:
-#     - env | sort
-#     - pwd
+#     - docker build -t docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
+#   post:
+#     - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)" docker.io
 #
-#   override:
-#     - go test -v -race ./...
+# deployment:
+#   master:
+#     branch: master
+#     commands:
+#       - echo $DOCKER_PASSWORD | base64 --decode > ${HOME}/docker_pass
+#       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)" docker.io
+#       - docker build -t docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
+#       - docker tag docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest
+#       - docker images
