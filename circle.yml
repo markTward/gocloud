@@ -5,22 +5,19 @@ machine:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
     - env | sort
   services:
-    docker
-  post:
-    docker info
+    - docker
 
-# dependencies:
-#   pre:
-#     - docker build -t docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
-#   post:
-#     - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)" docker.io
-#
-# deployment:
-#   master:
-#     branch: master
-#     commands:
-#       - echo $DOCKER_PASSWORD | base64 --decode > ${HOME}/docker_pass
-#       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)" docker.io
-#       - docker build -t docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
-#       - docker tag docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest
-#       - docker images
+
+dependencies:
+  override:
+    - docker info
+    - docker build -t docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
+    - docker images
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - echo $DOCKER_PASSWORD | base64 --decode > ${HOME}/docker_pass
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p "$(cat ${HOME}/docker_pass)" docker.io
+      - docker tag docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest
