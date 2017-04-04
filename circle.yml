@@ -13,7 +13,7 @@ deployment:
   feature:
     branch: [dev]
     commands:
-      - echo $DOCKER_PASSWORD | base64 --decode > ${HOME}/docker_pass
+      - echo $DOCKER_PASS | base64 --decode > ${HOME}/docker_pass
       - docker build -t ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
       - docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:latest
       - docker images
