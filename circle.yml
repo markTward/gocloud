@@ -11,7 +11,7 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker build -t docker.io/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
+    - docker build -t ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:$VCS_REF .
     - docker images
 
 deployment:
