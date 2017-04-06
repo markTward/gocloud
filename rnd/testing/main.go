@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/markTward/gocloud/rnd/endpoints"
+	"github.com/markTward/gocloud/rnd/testing/endpoints"
 )
 
 type RestAPI struct {
@@ -12,14 +13,15 @@ type RestAPI struct {
 }
 
 func (api *RestAPI) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
-	name := r.FormValue("name")
-	if name == "" {
-		name = "World!"
+	log.Println("r.URL.Query()[\"name\"]", r.URL.Query()["name"])
+	msg, err := api.hw.HelloWorld(r.URL.Query()["name"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	hw := api.hw.HelloWorld(name)
-	log.Printf("HelloWorld value: %s", hw)
-	w.Write([]byte(hw))
+	log.Printf("%s?%s; Message:%s", r.URL.Path, r.URL.RawQuery, msg)
+	fmt.Fprintf(w, "%s", msg)
 }
 
 func main() {
