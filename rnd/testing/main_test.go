@@ -6,13 +6,15 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type TestHelloWorldEndpoint struct{}
 
 func (api TestHelloWorldEndpoint) HelloWorld(names []string) (string, error) {
 	// handle 0-to-Many qs names
-	defaultName := "Hello World!"
+	defaultName := "World"
 	name := defaultName
 	if len(names) != 0 {
 		name = strings.Join(names, ", ")
@@ -37,6 +39,13 @@ func TestHelloWorldHandler(t *testing.T) {
 			expectedStatusCode: 200,
 			message:            "Hello DUDE!",
 		},
+		{
+			description:        "successful query",
+			hwEndpoint:         &TestHelloWorldEndpoint{},
+			url:                "/hw",
+			expectedStatusCode: 200,
+			message:            "Hello World!",
+		},
 	}
 
 	for _, hw := range tests {
@@ -45,14 +54,16 @@ func TestHelloWorldHandler(t *testing.T) {
 		if err != nil {
 
 		}
+
 		w := httptest.NewRecorder()
 		app.HelloWorldHandler(w, req)
+
 		if hw.expectedStatusCode != w.Code {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				w.Code, hw.expectedStatusCode)
 		}
-		if hw.message != w.Body.String() {
-			t.Errorf("handler return wrong body: got %v want %v", w.Body.String(), hw.message)
-		}
+
+		assert.Equal(t, hw.message, w.Body.String(), hw.description)
+
 	}
 }

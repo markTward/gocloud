@@ -14,7 +14,7 @@ import (
 
 const (
 	addressDB   = "gocloud-grpc:8000"
-	defaultName = "World!"
+	defaultName = "World"
 	timeout     = 1
 )
 

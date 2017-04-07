@@ -16,6 +16,7 @@ func (api *RestAPI) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("r.URL.Query()[\"name\"]", r.URL.Query()["name"])
 	msg, err := api.hw.HelloWorld(r.URL.Query()["name"])
 	if err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -26,9 +27,7 @@ func (api *RestAPI) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	api := &RestAPI{hw: endpoints.RestAPIHelloWorldEndpoint{}}
-
 	http.HandleFunc("/hw", api.HelloWorldHandler)
-
 	log.Println("listening on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -13,7 +13,7 @@ import (
 
 const (
 	addressDB   = "gocloud-grpc:8000"
-	defaultName = "World!"
+	defaultName = "World"
 	timeout     = 1
 )
 
@@ -47,11 +47,9 @@ func (api RestAPIHelloWorldEndpoint) HelloWorld(names []string) (string, error) 
 	rpc, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: name})
 	if err != nil {
 		log.Printf("%v", err)
-		msg, grpcErr = "", fmt.Errorf("grpc: server unreachable, %s", err)
-		// return "", fmt.Errorf("grpc: server unreachable, %s", err)
+		msg, grpcErr = "", fmt.Errorf("%s", err)
 	} else {
 		msg, grpcErr = rpc.Message, nil
-		// fmt.Fprint(w, rpc.Message)
 	}
 
 	return msg, grpcErr
