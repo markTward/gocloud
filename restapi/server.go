@@ -11,7 +11,7 @@ import (
 type RestAPI struct {
 	hw endpoints.HelloWorldEndpoint
 	hc endpoints.HealthCheckEndpoint
-
+}
 
 func (api *RestAPI) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(api.hc.HealthCheck())
