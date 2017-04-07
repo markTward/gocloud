@@ -5,7 +5,6 @@ import "fmt"
 type RestAPI struct {
 	Name string
 	Endpoints
-	// RestAPIIniter
 }
 
 type RestAPIMPC RestAPI
@@ -30,14 +29,14 @@ type GitEndpoint struct {
 type LoginEndpoint struct{}
 
 type RestAPIIniter interface {
-	Init() error
+	Init(string) error
 }
 
-func InitAPI(init RestAPIIniter) error {
-	return init.Init()
+func InitAPI(init RestAPIIniter, name string) error {
+	return init.Init(name)
 }
 
-func (api *RestAPI) Init() error {
+func (api *RestAPI) Init(name string) error {
 	// api.Name = name
 	eps := make(Endpoints)
 
@@ -61,7 +60,7 @@ func (api *RestAPI) Init() error {
 	return nil
 }
 
-func (api *RestAPIGreediMonki) Init() error {
+func (api *RestAPIGreediMonki) Init(name string) error {
 	// api.Name = name
 	eps := make(Endpoints)
 
@@ -77,16 +76,16 @@ func (api *RestAPIGreediMonki) Init() error {
 
 func main() {
 
-	api := &RestAPI{Name: "GoCloud"}
-	InitAPI(api)
+	api := &RestAPI{}
+	InitAPI(api, "GoCloud")
 
 	fmt.Println("RestAPI:", api.Name)
 	for _, ep := range api.Endpoints {
 		fmt.Println("\tEndpoint:", ep)
 	}
 
-	apigm := &RestAPIGreediMonki{Name: "GreediMonki"}
-	InitAPI(apigm)
+	apigm := &RestAPIGreediMonki{}
+	InitAPI(apigm, "GreediMonki")
 
 	fmt.Println("RestAPI:", apigm.Name)
 	for _, ep := range apigm.Endpoints {
