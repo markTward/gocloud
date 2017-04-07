@@ -72,10 +72,18 @@ func (api *RestAPIGreediMonki) init(name string) {
 func main() {
 
 	api := &RestAPI{}
-	api.init("GreediMonki")
+	api.init("GoCloud")
 
 	fmt.Println("RestAPI:", api.Name)
 	for _, ep := range api.Endpoints {
+		fmt.Println("\tEndpoint:", ep)
+	}
+
+	apigm := &RestAPIGreediMonki{}
+	apigm.init("GreediMonki")
+
+	fmt.Println("RestAPI:", apigm.Name)
+	for _, ep := range apigm.Endpoints {
 		fmt.Println("\tEndpoint:", ep)
 	}
 
