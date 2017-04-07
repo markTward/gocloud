@@ -7,6 +7,8 @@ type RestAPI struct {
 	Endpoints
 }
 
+type RestAPIGreediMonki RestAPI
+
 type Endpoints map[string]Endpoint
 
 type Endpoint struct {
@@ -22,6 +24,8 @@ type HelloWorldEndpoint struct {
 type GitEndpoint struct {
 	Endpoint
 }
+
+type LoginEndpoint struct{}
 
 type RestAPIInit interface {
 	init(string) RestAPI
@@ -40,12 +44,26 @@ func (api *RestAPI) init(name string) {
 		Endpoint{
 			id:          "git",
 			url:         "/github.com/user",
-			description: "githug user endpoint",
+			description: "github user endpoint",
 		},
 	}
 
 	eps[ephw.ep.id] = ephw.ep
 	eps[epgit.id] = epgit.Endpoint
+
+	api.Endpoints = eps
+
+}
+
+func (api *RestAPIGreediMonki) init(name string) {
+	api.Name = name
+	eps := make(Endpoints)
+
+	eps["login"] = Endpoint{
+		id:          "login",
+		url:         "/login",
+		description: "user login",
+	}
 
 	api.Endpoints = eps
 
