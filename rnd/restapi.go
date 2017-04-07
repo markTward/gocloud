@@ -18,7 +18,9 @@ type HelloWorldEndpoint struct {
 	Endpoint
 }
 
-type GitEndpoint Endpoint
+type GitEndpoint struct {
+  Endpoint
+}
 
 func main() {
 
@@ -27,10 +29,12 @@ func main() {
 	ephw.url = "/hw"
 	ephw.description = "hello world! endpoint"
 
-	epgit := Endpoint{
+	epgit := GitEndpoint{
+    Endpoint {
 		id:          "git",
 		url:         "/github.com/user",
 		description: "githug user endpoint",
+  }
 	}
 
 	eps := make(Endpoints)
