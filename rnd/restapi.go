@@ -3,7 +3,8 @@ package main
 import "fmt"
 
 type RestAPI struct {
-	eps Endpoints
+	Name string
+	Endpoints
 }
 
 type Endpoints map[string]Endpoint
@@ -19,7 +20,7 @@ type HelloWorldEndpoint struct {
 }
 
 type GitEndpoint struct {
-  Endpoint
+	Endpoint
 }
 
 func main() {
@@ -30,20 +31,23 @@ func main() {
 	ephw.description = "hello world! endpoint"
 
 	epgit := GitEndpoint{
-    Endpoint {
-		id:          "git",
-		url:         "/github.com/user",
-		description: "githug user endpoint",
-  }
+		Endpoint{
+			id:          "git",
+			url:         "/github.com/user",
+			description: "githug user endpoint",
+		},
 	}
 
 	eps := make(Endpoints)
 	eps[ephw.id] = ephw.Endpoint
+	eps[epgit.id] = epgit.Endpoint
 
-	api := RestAPI{eps: eps}
+	api := RestAPI{Endpoints: eps}
 
-	fmt.Println(api.eps, eps, ephw, epgit)
-	// fmt.Printf("%v / %T\n", x, x)
-	fmt.Printf("%v / %T\n", ephw, ephw)
+	fmt.Println("RestAPI:", api.Name)
+
+	for _, ep := range api.Endpoints {
+		fmt.Println("\tEndpoint:", ep)
+	}
 
 }
