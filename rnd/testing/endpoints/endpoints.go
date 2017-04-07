@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -16,6 +17,16 @@ const (
 	defaultName = "World"
 	timeout     = 1
 )
+
+type HealthCheckEndpoint interface {
+	HealthCheck() int
+}
+
+type RestAPIHealthCheckEndpoint struct{}
+
+func (api RestAPIHealthCheckEndpoint) HealthCheck() int {
+	return http.StatusOK
+}
 
 type HelloWorldEndpoint interface {
 	HelloWorld([]string) (string, error)
