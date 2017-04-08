@@ -37,7 +37,7 @@ func InitAPI(init RestAPIIniter, name string) error {
 }
 
 func (api *RestAPI) Init(name string) error {
-	// api.Name = name
+	api.Name = name
 	eps := make(Endpoints)
 
 	ephw := HelloWorldEndpoint{}
@@ -61,7 +61,7 @@ func (api *RestAPI) Init(name string) error {
 }
 
 func (api *RestAPIGreediMonki) Init(name string) error {
-	// api.Name = name
+	api.Name = name
 	eps := make(Endpoints)
 
 	eps["login"] = Endpoint{
