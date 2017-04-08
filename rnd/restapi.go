@@ -7,9 +7,6 @@ type RestAPI struct {
 	Endpoints
 }
 
-type RestAPIMPC RestAPI
-type RestAPIGreediMonki RestAPI
-
 type Endpoints map[string]Endpoint
 
 type Endpoint struct {
@@ -17,16 +14,6 @@ type Endpoint struct {
 	url         string
 	description string
 }
-
-type HelloWorldEndpoint struct {
-	ep Endpoint
-}
-
-type GitEndpoint struct {
-	Endpoint
-}
-
-type LoginEndpoint struct{}
 
 type RestAPIIniter interface {
 	Init(string) error
@@ -40,35 +27,27 @@ func (api *RestAPI) Init(name string) error {
 	api.Name = name
 	eps := make(Endpoints)
 
-	ephw := HelloWorldEndpoint{}
-	ephw.ep.id = "hw"
-	ephw.ep.url = "/hw"
-	ephw.ep.description = "hello world! endpoint"
-
-	epgit := GitEndpoint{
-		Endpoint{
-			id:          "git",
-			url:         "/github.com/user",
-			description: "github user endpoint",
-		},
+	ephw := Endpoint{
+		id:          "hw",
+		url:         "/hw",
+		description: "hello world! endpoint",
 	}
 
-	eps[ephw.ep.id] = ephw.ep
-	eps[epgit.id] = epgit.Endpoint
+	epgit := Endpoint{
+		id:          "git",
+		url:         "/github.com/user",
+		description: "github user endpoint",
+	}
 
-	api.Endpoints = eps
-	return nil
-}
-
-func (api *RestAPIGreediMonki) Init(name string) error {
-	api.Name = name
-	eps := make(Endpoints)
-
-	eps["login"] = Endpoint{
+	eplog := Endpoint{
 		id:          "login",
 		url:         "/login",
 		description: "user login",
 	}
+
+	eps[ephw.id] = ephw
+	eps[epgit.id] = epgit
+	eps[eplog.id] = eplog
 
 	api.Endpoints = eps
 	return nil
@@ -81,14 +60,6 @@ func main() {
 
 	fmt.Println("RestAPI:", api.Name)
 	for _, ep := range api.Endpoints {
-		fmt.Println("\tEndpoint:", ep)
-	}
-
-	apigm := &RestAPIGreediMonki{}
-	InitAPI(apigm, "GreediMonki")
-
-	fmt.Println("RestAPI:", apigm.Name)
-	for _, ep := range apigm.Endpoints {
 		fmt.Println("\tEndpoint:", ep)
 	}
 
