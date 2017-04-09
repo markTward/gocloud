@@ -35,3 +35,4 @@ minikube stop
 Test docker images as part of CI/CD
 Deployment to k8s cluster
 Transition to Travis CI for building PR merge targets
+Split apart grpc and restapi into different repos
