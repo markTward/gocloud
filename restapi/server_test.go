@@ -58,7 +58,9 @@ func TestHelloWorldHandler(t *testing.T) {
 		w := httptest.NewRecorder()
 		app.HelloWorldHandler(w, req)
 
-		if hw.expectedStatusCode != w.Code {
+		// TODO: travis test forcing error
+		// if hw.expectedStatusCode != w.Code {
+		if hw.expectedStatusCode == w.Code {
 			t.Errorf("handler returned wrong status code: got %v want %v",
 				w.Code, hw.expectedStatusCode)
 		}
