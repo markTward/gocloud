@@ -2,5 +2,9 @@ language: go
 go:
  - 1.8.x
 
+install:
+  - go get -d -v ./...
+  - go build -v ./...
+
 script:
  - go test -v ./...
