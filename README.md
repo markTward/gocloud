@@ -32,4 +32,5 @@ minikube stop
 #NOTES
 
 #TODO
-Mock testing for grpc and http
+Test docker images as part of CI/CD
+Deployment to k8s cluster
