@@ -14,7 +14,7 @@ func main() {
 	f := 3.14
 	s := "Hello world"
 	i = append(i, f, s, Test{1, "test01"})
-	fmt.Println(i)
+	fmt.Printf("%#v :: %T\n", i, i)
 	for idx, v := range i {
 		fmt.Printf("%v :: %#v :: %T\n", idx, v, v)
 	}
