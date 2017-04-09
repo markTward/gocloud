@@ -4,7 +4,10 @@ go:
 
 install:
   - go get -d -v ./...
-  - go get github.com/stretchr/testify/assert
+  - go get -d -v github.com/stretchr/testify/assert
 
 script:
  - go test -v ./...
+
+ notifications:
+  email: false
