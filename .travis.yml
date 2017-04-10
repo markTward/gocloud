@@ -19,14 +19,14 @@ install:
 script:
   - env | sort
   - go test -v ./...
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build -t $REPO:$TAG -f Dockerfile .
+  - docker build -t $REPO:$COMMIT -f Dockerfile .
 
 after_success:
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:$TRAVIS_BUILD_NUMBER
+  - docker images
  # - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-   - docker tag $REPO:$COMMIT $REPO:$TAG
-   - docker tag $REPO:$COMMIT $REPO:$TRAVIS_BUILD_NUMBER
-   - docker images
  # - docker push $REPO
 
 notifications:
