@@ -16,6 +16,7 @@ script:
 - env | sort
 - go test -v ./...
 - export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
+- docker version
 - docker build -t $DOCKER_REPO:$COMMIT -f Dockerfile .
 after_success:
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH

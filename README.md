@@ -1,3 +1,12 @@
+#TODO
+Test docker images as part of CI/CD:
+Deployment to k8s cluster
+Transition to Travis CI for building PR merge targets
+Split apart grpc and restapi into different repos
+go get fails to download github.com/stretchr/testify/assert in test file
+Migrate major test/deploy steps to new repo and checkout into build: gocloud-cicd
+Travis <==> Slack notifications
+
 # docker-compose
 ## start services
 docker-compose up -d
@@ -30,9 +39,3 @@ kubectl delete svc/greeter-grpc svc/greeter-web
 minikube stop
 
 #NOTES
-
-#TODO
-Test docker images as part of CI/CD
-Deployment to k8s cluster
-Transition to Travis CI for building PR merge targets
-Split apart grpc and restapi into different repos
