@@ -12,8 +12,9 @@ services:
 - docker
 before_install:
 - pwd
-- git clone https://github.com/markTward/gocloud-cicd.git
-- ls -la gocloud-cicd
+- mkdir -p external/github.com
+- git clone git clone https://github.com/markTward/gocloud-cicd.git external/github.com/gocloud-cicd
+- ls -la external/github.com/gocloud-cicd; cat external/github.com/gocloud-cicd/README.md
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
