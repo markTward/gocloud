@@ -1,33 +1,29 @@
 language: go
 sudo: required
-
 env:
   global:
   - COMMIT=${TRAVIS_COMMIT::8}
   - REPO=marktward/gocloud
-
+  matrix:
+    secure: LamXFSJ+XxBF9cKRB6M1iSAGHcLdFHvDj3s2VaRS1z7+lLVtPhj4ArQHBVLNEJhMkI8+slx/N9xk4P8IrB6IQRQjLJUXIBmFVc50P0m298qBPuO+qqq4lXolqR+xTu55Yve6keSDJ887kLUvNon1UiVha/iCOmpy7yM2RcTO1XMkJY0GWqcMQdsIVTYVBCqGJ9ANbGKjVoSfYnfSLaPkxuloFF4ewAy8ie/t0htRXdOIp60SstMAXpUeZhPDfdBgkm7VjrX4sqC3y+7ZHgn2/cNtifuMkGgzKdXv5OJ8QygDcQvqox1F3f1m40bqV3xfnWDRvurj0KLhTz6etLeeANY4GJmy60B7t2XkeXGdf8hewjm128Ct40ZdrATlBZYcqqyLvMOT5XtGp3vTczbEGkX97pbQua4aTkGiHVpWz/RchhVej6EsOgRJZ0xGjkuAorUXUVpqjAtYNyJnxCOA9gMuUdeEFgNwT7Orpjr+KBdz39q0R+NRILL16ozjix4/xLKF/PsmIFK3JkECrewZHq6LlqpuR65RmOz9pRCv5huDKxLGUp6jAAwNHwu1/BQAhzJAgpXbazXD6PpnL95Fm5yjCctZ6hgDmVoFueTDquQyfFLqz508DDy0NXDIBPfpz+/VCFYSxJnImCci+TtQorTdfbxpED/yVWETBDzfFys=
 go:
-  - 1.8.x
-
+- 1.8.x
 services:
-  - docker
-
+- docker
 install:
-  - go get -d -v ./...
-  - go get -d -v github.com/stretchr/testify/assert
-
+- go get -d -v ./...
+- go get -d -v github.com/stretchr/testify/assert
 script:
-  - env | sort
-  - go test -v ./...
-  - docker build -t $REPO:$COMMIT -f Dockerfile .
-
+- env | sort
+- go test -v ./...
+- docker build -t $REPO:$COMMIT -f Dockerfile .
 after_success:
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker tag $REPO:$COMMIT $REPO:$TAG
-  - docker tag $REPO:$COMMIT $REPO:$TRAVIS_BUILD_NUMBER
-  - docker images
- # - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
- # - docker push $REPO
-
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker tag $REPO:$COMMIT $REPO:$TAG
+- docker tag $REPO:$COMMIT $REPO:$TRAVIS_BUILD_NUMBER
+- docker images
+- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+- docker push $REPO
 notifications:
   email: false
