@@ -3,8 +3,8 @@ sudo: required
 env:
   global:
   - COMMIT=${TRAVIS_COMMIT::8}
-  - REPO=marktward/gocloud
   matrix:
+    # $DOCKER_PASSWORD
     secure: LamXFSJ+XxBF9cKRB6M1iSAGHcLdFHvDj3s2VaRS1z7+lLVtPhj4ArQHBVLNEJhMkI8+slx/N9xk4P8IrB6IQRQjLJUXIBmFVc50P0m298qBPuO+qqq4lXolqR+xTu55Yve6keSDJ887kLUvNon1UiVha/iCOmpy7yM2RcTO1XMkJY0GWqcMQdsIVTYVBCqGJ9ANbGKjVoSfYnfSLaPkxuloFF4ewAy8ie/t0htRXdOIp60SstMAXpUeZhPDfdBgkm7VjrX4sqC3y+7ZHgn2/cNtifuMkGgzKdXv5OJ8QygDcQvqox1F3f1m40bqV3xfnWDRvurj0KLhTz6etLeeANY4GJmy60B7t2XkeXGdf8hewjm128Ct40ZdrATlBZYcqqyLvMOT5XtGp3vTczbEGkX97pbQua4aTkGiHVpWz/RchhVej6EsOgRJZ0xGjkuAorUXUVpqjAtYNyJnxCOA9gMuUdeEFgNwT7Orpjr+KBdz39q0R+NRILL16ozjix4/xLKF/PsmIFK3JkECrewZHq6LlqpuR65RmOz9pRCv5huDKxLGUp6jAAwNHwu1/BQAhzJAgpXbazXD6PpnL95Fm5yjCctZ6hgDmVoFueTDquQyfFLqz508DDy0NXDIBPfpz+/VCFYSxJnImCci+TtQorTdfbxpED/yVWETBDzfFys=
 go:
 - 1.8.x
@@ -16,14 +16,18 @@ install:
 script:
 - env | sort
 - go test -v ./...
-- docker build -t $REPO:$COMMIT -f Dockerfile .
+- export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
+- docker version
+- docker build -t $DOCKER_REPO:$COMMIT -f Dockerfile .
 after_success:
 - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
   ; fi`
-- docker tag $REPO:$COMMIT $REPO:$TAG
-- docker tag $REPO:$COMMIT $REPO:$TRAVIS_BUILD_NUMBER
+- docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:$TAG
 - docker images
 - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD
-- docker push $REPO
+- docker push $DOCKER_REPO
 notifications:
   email: false
+  slack:
+    # Travis Integration
+    secure: mLz+VMsdMLzc+v0h1IZtcdgQXCU6lTjtOtEmj2Zk0oprmrDbzbGVeMvWo+aidBcxMsjbWmzidxX3gMIvaPDL7M/xFffhivAFCQPPO5IMqIByaric8CkSgOMkOuDSnzg3GaaJOXYynvuSuoSLLC30rk/rYlWunTtCMr+4acKNzXh5Dvk/68CP/Hu1PoolyAJW601H724j+R3l+U6M2ejjaHJ2JXn4S4N37sE1qiR4H7bhhXuCR5gNjsJHmvo6k4crff1c9jjH2+6ytxfmd/uBEZL3i+QV5Ntmay1nWgG5VJMiW3L+lEPWFUrPNBUluLtcX18OO3IjuxX8NZqLRyYnTueC3FxMyCUFA/vlPOfJLd7gLm+6PlrpZkvNf84ZFtyTWk02AO3nuSinffyFTKnVdgI0q52e3Y6FAMNEeCM+VA4GCTnI86kwM7CTbkPtAwpLjNc6N3j9K9Hx/ZwvSGcGdATnf/Gbo10R9ldQ+ffNQ+o2KrkmFQsXEK5U0TYLN3+DTvsKYdAgNzKa2O7mFLTD33lIMv2MFHUeNvPDg9UrnxpMafciMxb0/l/md8sVl0wTAiOaPh36mn/Dcc+LN+inie3p7QC7opU7sicKBLjDR/hWgGlmkhZyK+QzGQKa60+L7AoO3xaEkp2BnF8U39nYhbHw9lHoS4XrCnl8AFUH6tc=
