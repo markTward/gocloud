@@ -10,6 +10,10 @@ go:
 - 1.8.x
 services:
 - docker
+before_install:
+- pwd
+- git clone https://github.com/markTward/gocloud-cicd.git
+- ls -la gocloud-cicd
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
