@@ -5,16 +5,16 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/markTward/gocloud/restapi/endpoints"
+	ep "github.com/markTward/gocloud/restapi/endpoints"
 )
 
 type RestAPI struct {
-	hw endpoints.HelloWorldEndpoint
-	hc endpoints.HealthCheckEndpoint
+	ep.HelloWorldEndpoint
+	ep.HealthCheckEndpoint
 }
 
 func (api *RestAPI) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(api.hc.HealthCheck())
+	w.WriteHeader(api.HealthCheck())
 	fmt.Fprint(w, "OK")
 	log.Println(r.URL.Path, http.StatusOK)
 }
@@ -22,7 +22,7 @@ func (api *RestAPI) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 func (api *RestAPI) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("r.URL.Query()[\"name\"]", r.URL.Query()["name"])
 
-	msg, err := api.hw.HelloWorld(r.URL.Query()["name"])
+	msg, err := api.HelloWorld(r.URL.Query()["name"])
 	if err != nil {
 		log.Println(err)
 		//TODO: write user friendly error message
@@ -40,8 +40,8 @@ const (
 
 func Start() {
 	api := &RestAPI{
-		hw: endpoints.RestAPIHelloWorldEndpoint{},
-		hc: endpoints.RestAPIHealthCheckEndpoint{},
+		ep.RestAPIHelloWorldEndpoint{},
+		ep.RestAPIHealthCheckEndpoint{},
 	}
 
 	http.HandleFunc("/hw", api.HelloWorldHandler)

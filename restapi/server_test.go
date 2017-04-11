@@ -27,21 +27,21 @@ func (api TestHelloWorldEndpoint) HelloWorld(names []string) (string, error) {
 func TestHelloWorldHandler(t *testing.T) {
 	tests := []struct {
 		description        string
-		hwEndpoint         *TestHelloWorldEndpoint
+		endpoint           *TestHelloWorldEndpoint
 		url                string
 		expectedStatusCode int
 		message            string
 	}{
 		{
 			description:        "successful query",
-			hwEndpoint:         &TestHelloWorldEndpoint{},
+			endpoint:           &TestHelloWorldEndpoint{},
 			url:                "/hw?name=DUDE",
 			expectedStatusCode: 200,
 			message:            "Hello DUDE!",
 		},
 		{
 			description:        "successful query",
-			hwEndpoint:         &TestHelloWorldEndpoint{},
+			endpoint:           &TestHelloWorldEndpoint{},
 			url:                "/hw",
 			expectedStatusCode: 200,
 			message:            "Hello World!",
@@ -49,10 +49,12 @@ func TestHelloWorldHandler(t *testing.T) {
 	}
 
 	for _, hw := range tests {
-		app := &RestAPI{hw: hw.hwEndpoint}
+		app := &RestAPI{}
+		app.HelloWorldEndpoint = hw.endpoint
+
 		req, err := http.NewRequest("GET", hw.url, nil)
 		if err != nil {
-
+			t.Error(err)
 		}
 
 		w := httptest.NewRecorder()
