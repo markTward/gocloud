@@ -7,12 +7,14 @@ import (
 	"strings"
 	"testing"
 
+	ep "github.com/markTward/gocloud/restapi/endpoints"
+
 	"github.com/stretchr/testify/assert"
 )
 
-type TestHelloWorldEndpoint struct{}
+type HelloWorldEndpoint struct{}
 
-func (api TestHelloWorldEndpoint) HelloWorld(names []string) (string, error) {
+func (api HelloWorldEndpoint) HelloWorld(names []string) (string, error) {
 	// handle 0-to-Many qs names
 	defaultName := "World"
 	name := defaultName
@@ -27,36 +29,42 @@ func (api TestHelloWorldEndpoint) HelloWorld(names []string) (string, error) {
 func TestHelloWorldHandler(t *testing.T) {
 	tests := []struct {
 		description        string
-		hwEndpoint         *TestHelloWorldEndpoint
 		url                string
 		expectedStatusCode int
 		message            string
 	}{
 		{
 			description:        "successful query",
-			hwEndpoint:         &TestHelloWorldEndpoint{},
 			url:                "/hw?name=DUDE",
 			expectedStatusCode: 200,
 			message:            "Hello DUDE!",
 		},
 		{
 			description:        "successful query",
-			hwEndpoint:         &TestHelloWorldEndpoint{},
+			url:                "/hw?name=GoCloud&name=DUDE",
+			expectedStatusCode: 200,
+			message:            "Hello GoCloud, DUDE!",
+		},
+		{
+			description:        "successful query",
 			url:                "/hw",
 			expectedStatusCode: 200,
 			message:            "Hello World!",
 		},
 	}
 
+	// setup test RestAPI using local endpoint
+	api := &ep.RestAPI{}
+	api.HelloWorlder = &HelloWorldEndpoint{}
+
 	for _, hw := range tests {
-		app := &RestAPI{hw: hw.hwEndpoint}
 		req, err := http.NewRequest("GET", hw.url, nil)
 		if err != nil {
-
+			t.Error(err)
 		}
 
 		w := httptest.NewRecorder()
-		app.HelloWorldHandler(w, req)
+		api.HelloWorldHandler(w, req)
 
 		if hw.expectedStatusCode != w.Code {
 			t.Errorf("handler returned wrong status code: got %v want %v",

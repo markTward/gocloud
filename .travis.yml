@@ -10,6 +10,11 @@ go:
 - 1.8.x
 services:
 - docker
+before_install:
+- pwd
+- mkdir -p external/github.com
+- git clone https://github.com/markTward/gocloud-cicd.git external/github.com/gocloud-cicd
+- ls -la external/github.com/gocloud-cicd; cat external/github.com/gocloud-cicd/README.md
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -25,7 +30,8 @@ after_success:
 - docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:$TAG
 - docker images
 - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD
-- docker push $DOCKER_REPO
+# only push logical TAG image for now
+- docker push $DOCKER_REPO:$TAG
 notifications:
   email: false
   slack:
