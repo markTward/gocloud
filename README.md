@@ -6,6 +6,7 @@ Split apart grpc and restapi into different repos
 go get fails to download github.com/stretchr/testify/assert in test file
 Migrate major test/deploy steps to new repo and checkout into build: gocloud-cicd
 Travis <==> Slack notifications
+Add --port option to restapi and grpc cmds
 
 # docker-compose
 ## start services

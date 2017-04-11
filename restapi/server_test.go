@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	ep "github.com/markTward/gocloud/restapi/endpoints"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -56,8 +58,8 @@ func TestHelloWorldHandler(t *testing.T) {
 	}
 
 	for _, hw := range tests {
-		app := &RestAPI{}
-		app.HealthWorlder = hw.endpoint
+		app := &ep.RestAPI{}
+		app.HelloWorlder = hw.endpoint
 
 		req, err := http.NewRequest("GET", hw.url, nil)
 		if err != nil {
