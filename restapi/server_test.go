@@ -42,6 +42,13 @@ func TestHelloWorldHandler(t *testing.T) {
 		{
 			description:        "successful query",
 			endpoint:           &TestHelloWorldEndpoint{},
+			url:                "/hw?name=DUDE&name=Cloud",
+			expectedStatusCode: 200,
+			message:            "Hello DUDE, Cloud!",
+		},
+		{
+			description:        "successful query",
+			endpoint:           &TestHelloWorldEndpoint{},
 			url:                "/hw",
 			expectedStatusCode: 200,
 			message:            "Hello World!",
