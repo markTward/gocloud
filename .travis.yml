@@ -1,8 +1,6 @@
 language: go
 sudo: required
 env:
-  global:
-  - COMMIT=${TRAVIS_COMMIT::8}
   matrix:
     # DOCKER_PASSWORD
     secure: LamXFSJ+XxBF9cKRB6M1iSAGHcLdFHvDj3s2VaRS1z7+lLVtPhj4ArQHBVLNEJhMkI8+slx/N9xk4P8IrB6IQRQjLJUXIBmFVc50P0m298qBPuO+qqq4lXolqR+xTu55Yve6keSDJ887kLUvNon1UiVha/iCOmpy7yM2RcTO1XMkJY0GWqcMQdsIVTYVBCqGJ9ANbGKjVoSfYnfSLaPkxuloFF4ewAy8ie/t0htRXdOIp60SstMAXpUeZhPDfdBgkm7VjrX4sqC3y+7ZHgn2/cNtifuMkGgzKdXv5OJ8QygDcQvqox1F3f1m40bqV3xfnWDRvurj0KLhTz6etLeeANY4GJmy60B7t2XkeXGdf8hewjm128Ct40ZdrATlBZYcqqyLvMOT5XtGp3vTczbEGkX97pbQua4aTkGiHVpWz/RchhVej6EsOgRJZ0xGjkuAorUXUVpqjAtYNyJnxCOA9gMuUdeEFgNwT7Orpjr+KBdz39q0R+NRILL16ozjix4/xLKF/PsmIFK3JkECrewZHq6LlqpuR65RmOz9pRCv5huDKxLGUp6jAAwNHwu1/BQAhzJAgpXbazXD6PpnL95Fm5yjCctZ6hgDmVoFueTDquQyfFLqz508DDy0NXDIBPfpz+/VCFYSxJnImCci+TtQorTdfbxpED/yVWETBDzfFys=
@@ -22,14 +20,8 @@ script:
 - env | sort
 - go test -v ./...
 - export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
-- docker version
-- docker build -t $DOCKER_REPO:$COMMIT -f Dockerfile .
 after_success:
-- docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:$TRAVIS_BRANCH
-- if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:PR-$TRAVIS_PULL_REQUEST ;fi
-- docker images
-- docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD
-- docker push $DOCKER_REPO
+- ./deploy/docker_push.sh
 notifications:
   email: false
   slack:
