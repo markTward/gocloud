@@ -18,7 +18,7 @@ const (
 	timeout     = 1
 )
 
-type HealthCheckEndpoint interface {
+type HealthChecker interface {
 	HealthCheck() int
 }
 
@@ -28,7 +28,7 @@ func (api RestAPIHealthCheckEndpoint) HealthCheck() int {
 	return http.StatusOK
 }
 
-type HelloWorldEndpoint interface {
+type HealthWorlder interface {
 	HelloWorld([]string) (string, error)
 }
 

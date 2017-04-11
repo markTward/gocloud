@@ -57,7 +57,7 @@ func TestHelloWorldHandler(t *testing.T) {
 
 	for _, hw := range tests {
 		app := &RestAPI{}
-		app.HelloWorldEndpoint = hw.endpoint
+		app.HealthWorlder = hw.endpoint
 
 		req, err := http.NewRequest("GET", hw.url, nil)
 		if err != nil {

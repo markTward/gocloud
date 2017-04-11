@@ -9,8 +9,8 @@ import (
 )
 
 type RestAPI struct {
-	ep.HelloWorldEndpoint
-	ep.HealthCheckEndpoint
+	ep.HealthWorlder
+	ep.HealthChecker
 }
 
 func (api *RestAPI) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
