@@ -25,13 +25,11 @@ script:
 - docker version
 - docker build -t $DOCKER_REPO:$COMMIT -f Dockerfile .
 after_success:
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
-  ; fi`
-- docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:$TAG
+- docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:$TRAVIS_BRANCH
+- if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:PR-$TRAVIS_PULL_REQUEST ;fi
 - docker images
 - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD
-# only push logical TAG image for now
-- docker push $DOCKER_REPO:$TAG
+- docker push $DOCKER_REPO
 notifications:
   email: false
   slack:
