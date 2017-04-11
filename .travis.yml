@@ -30,7 +30,8 @@ after_success:
 - docker tag $DOCKER_REPO:$COMMIT $DOCKER_REPO:$TAG
 - docker images
 - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASSWORD
-- docker push $DOCKER_REPO
+# only push logical TAG image for now
+- docker push $DOCKER_REPO:$TAG
 notifications:
   email: false
   slack:
