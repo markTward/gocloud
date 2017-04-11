@@ -13,8 +13,8 @@ const (
 
 func Start() {
 	api := &ep.RestAPI{
-		ep.HelloWorldEndpoint{},
-		ep.HealthCheckEndpoint{},
+		HelloWorlder:  ep.HelloWorldEndpoint{},
+		HealthChecker: ep.HealthCheckEndpoint{},
 	}
 
 	http.HandleFunc("/hw", api.HelloWorldHandler)
