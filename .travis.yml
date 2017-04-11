@@ -20,6 +20,7 @@ script:
 - env | sort
 - go test -v ./...
 - export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
+- docker build -t $DOCKER_REPO:$TRAVIS_COMMIT -f Dockerfile .
 after_success:
 - ./deploy/docker_push.sh
 notifications:
