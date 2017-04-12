@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/markTward/gocloud/grpc"
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ var serveCmd = &cobra.Command{
 	Short: "start grpc server.",
 	Long:  `A longer description of start grpc server.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Starting gRPC server")
+		log.Println("Starting gRPC server")
 		grpc.Start()
 	},
 }

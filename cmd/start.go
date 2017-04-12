@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/markTward/gocloud/restapi"
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ var startCmd = &cobra.Command{
 	Short: "start grpc restapi server.",
 	Long:  `start grpc restapi server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("start restAPI server")
+		log.Println("start restAPI server")
 		restapi.Start()
 	},
 }

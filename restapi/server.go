@@ -20,6 +20,11 @@ func Start() {
 	http.HandleFunc("/hw", api.HelloWorldHandler)
 	http.HandleFunc("/healthcheck", api.HealthCheckHandler)
 
+	log.Printf("RestAPI api: %#v %T\n", api, api)
+	log.Printf("RestAPI &api: %#v %T\n", &api, &api)
+	log.Printf("RestAPI *api: %#v %T\n", *api, *api)
+
 	log.Println("listening on", address)
+
 	log.Fatal(http.ListenAndServe(address, nil))
 }

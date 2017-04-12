@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +27,7 @@ var grpcCmd = &cobra.Command{
 	Long:  `A longer description of grpc services`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: how to show nested subcommands
-		fmt.Println("TODO: show nested subcommands")
+		log.Println("TODO: show nested subcommands")
 	},
 }
 
