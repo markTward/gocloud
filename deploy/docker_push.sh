@@ -17,7 +17,7 @@ fi
 if [ "$TRAVIS_EVENT_TYPE" == "push" ]; then
   echo "docker build/push for TRAVIS_EVENT_TYPE=push"
   docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG $DOCKER_REPO:$TRAVIS_BRANCH;
-  if [ "$TRAVIS_BRANCH" == "master"]; then
+  if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG $DOCKER_REPO:latest;
   fi
 fi
