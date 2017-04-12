@@ -1,12 +1,11 @@
 #TODO
-Test docker images as part of CI/CD:
-Deployment to k8s cluster
-Transition to Travis CI for building PR merge targets
-Split apart grpc and restapi into different repos
-go get fails to download github.com/stretchr/testify/assert in test file
-Migrate major test/deploy steps to new repo and checkout into build: gocloud-cicd
-Travis <==> Slack notifications
-Add --port option to restapi and grpc cmds
+Test docker images as part of CI/CD:  
+Deployment to k8s cluster  
+Split apart grpc and restapi into different repos  
+go get fails to download github.com/stretchr/testify/assert in test file  
+Migrate major test/deploy steps to new repo and checkout into build: gocloud-cicd  
+Add --port option to restapi and grpc cmds  
+docker automated builds: [[https://github.com/docker/hub-feedback/issues/1012]]  
 
 # docker-compose
 ## start services
