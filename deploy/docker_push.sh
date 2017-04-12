@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 echo "docker_push.sh script start"
 
@@ -15,7 +15,6 @@ if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then
 fi
 
 if [ "$TRAVIS_EVENT_TYPE" == "push" ]; then
-  echo "docker build/push for TRAVIS_EVENT_TYPE=push"
   docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG $DOCKER_REPO:$TRAVIS_BRANCH;
   if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG $DOCKER_REPO:latest;
