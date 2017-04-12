@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 echo "docker_push.sh script start"
 
