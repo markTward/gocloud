@@ -2,10 +2,10 @@
 Test docker images as part of CI/CD:  
 Deployment to k8s cluster  
 Split apart grpc and restapi into different repos  
-go get fails to download github.com/stretchr/testify/assert in test file  
-Migrate major test/deploy steps to new repo and checkout into build: gocloud-cicd  
+go get -d fails to download github.com/stretchr/testify/assert in test file -- why?   
 Add --port option to restapi and grpc cmds  
-docker automated builds: [[https://github.com/docker/hub-feedback/issues/1012]]   
+docker automated builds (suck): [[https://github.com/docker/hub-feedback/issues/1012]]
+add config values for gocloud-cicd deploy scripts  
 
 # docker-compose
 ## start services
