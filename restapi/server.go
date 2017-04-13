@@ -3,8 +3,6 @@ package restapi
 import (
 	"log"
 	"net/http"
-
-	ep "github.com/markTward/gocloud/restapi/endpoints"
 )
 
 const (
@@ -12,9 +10,9 @@ const (
 )
 
 func Start() {
-	api := &ep.RestAPI{
-		HelloWorlder:  ep.HelloWorldEndpoint{},
-		HealthChecker: ep.HealthCheckEndpoint{},
+	api := &RestAPI{
+		HelloWorlder:  HelloWorldEndpoint{},
+		HealthChecker: HealthCheckEndpoint{},
 	}
 
 	http.HandleFunc("/hw", api.HelloWorldHandler)

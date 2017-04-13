@@ -1,4 +1,4 @@
-package endpoints
+package restapi
 
 import (
 	"context"

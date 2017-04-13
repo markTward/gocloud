@@ -7,14 +7,12 @@ import (
 	"strings"
 	"testing"
 
-	ep "github.com/markTward/gocloud/restapi/endpoints"
-
 	"github.com/stretchr/testify/assert"
 )
 
-type HelloWorldEndpoint struct{}
+type TestHelloWorldEndpoint struct{}
 
-func (api HelloWorldEndpoint) HelloWorld(names []string) (string, error) {
+func (api TestHelloWorldEndpoint) HelloWorld(names []string) (string, error) {
 	// handle 0-to-Many qs names
 	defaultName := "World"
 	name := defaultName
@@ -54,8 +52,8 @@ func TestHelloWorldHandler(t *testing.T) {
 	}
 
 	// setup test RestAPI using local endpoint
-	api := &ep.RestAPI{}
-	api.HelloWorlder = &HelloWorldEndpoint{}
+	api := &RestAPI{}
+	api.HelloWorlder = &TestHelloWorldEndpoint{}
 
 	for _, hw := range tests {
 		req, err := http.NewRequest("GET", hw.url, nil)
