@@ -6,9 +6,9 @@ services:
 - docker
 before_install:
 - pwd
-- mkdir -p external/github.com
-- git clone https://github.com/markTward/gocloud-cicd.git external/github.com/gocloud-cicd
-- ls -la external/github.com/gocloud-cicd; cat external/github.com/gocloud-cicd/README.md
+- GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
+- mkdir -p $GOCLOUD_CICD_DIR
+- git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -19,7 +19,7 @@ script:
 - export DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
 - docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
-- "./deploy/travis/docker_push.sh"
+- "./$GOCLOUD_CICD_DIR/deploy/travis/docker_push.sh"
 notifications:
   email: false
   slack:
