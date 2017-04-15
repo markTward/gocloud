@@ -1,10 +1,10 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: greeter-web
+  name: gocloud-api
 spec:
   selector:
-    app: greeter
+    app: gocloud
     tier: frontend
     component: web
   ports:

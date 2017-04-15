@@ -1,21 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: greeter-grpc
+  name: gocloud-grpc
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: greeter
+        app: gocloud
         tier: backend
         component: grpc
     spec:
       containers:
-      - name: greeter-be
+      - name: gocloud-be
         imagePullPolicy: Always
         image: marktward/gocloud:latest
         ports:
-          - name: greeter-be
+          - name: gocloud-be
             containerPort: 8000
         command: ["gocloud", "grpc", "serve"]

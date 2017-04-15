@@ -5,7 +5,7 @@ metadata:
   name: gocloud-grpc
 spec:
   selector:
-    app: greeter
+    app: gocloud
     tier: backend
     component: grpc
   ports:
