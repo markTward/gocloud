@@ -1,11 +1,14 @@
 #TODO
-Test docker images as part of CI/CD:  
-Deployment to k8s cluster  
-Split apart grpc and restapi into different repos  
-go get -d fails to download github.com/stretchr/testify/assert in test file -- why?   
-Add --port option to restapi and grpc cmds  
-docker automated builds (suck): [[https://github.com/docker/hub-feedback/issues/1012]]
-add config values for gocloud-cicd deploy scripts  
+travis deploy using custom scripts: https://docs.travis-ci.com/user/deployment/script
+Split apart grpc and restapi into different repos/services  
+Helm deployment to k8s added
+Makefile for docker/deploy scripts
+glide install
+add config values for gocloud-cicd deploy scripts
+Test docker images as part of CI/CD  
+go get -d fails to download github.com/stretchr/testify/assert in test file -- why?  
+Add --log-level option cmds  
+docker automated builds (suck): https://github.com/docker/hub-feedback/issues/1012  
 
 # docker-compose
 ## start services
