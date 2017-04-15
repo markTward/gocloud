@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	// TODO: addressDB must match k8s charts and template values
 	addressDB   = "gocloud-grpc:8000"
 	defaultName = "World"
 	timeout     = 1

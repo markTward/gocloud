@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  # greeter-grpc is used as network alias and must match addressDB value in pkg handlers
+  # gocloud-grpc is used as network alias and must match addressDB value in pkg handlers
   gocloud-grpc:
     image: marktward/gocloud:latest
     command: gocloud grpc serve

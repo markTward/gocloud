@@ -14,8 +14,8 @@ spec:
       containers:
       - name: greeter-be
         imagePullPolicy: Always
-        image: gocloud:latest
+        image: marktward/gocloud:latest
         ports:
           - name: greeter-be
             containerPort: 8000
-        command: ["greeter_server"]
+        command: ["gocloud", "grpc", "serve"]

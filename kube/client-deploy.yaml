@@ -14,8 +14,8 @@ spec:
       containers:
       - name: greeter-fe
         imagePullPolicy: Always
-        image: gocloud:latest
+        image: marktward/gocloud:latest
         ports:
         - containerPort: 8010
           name: greeter-fe
-        command: ["greeter_client"]
+        command: ["gocloud", "restapi", "start"]
