@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gocloud-api
+spec:
+  selector:
+    app: gocloud
+    tier: frontend
+    component: web
+  ports:
+    - protocol: "TCP"
+      port: 8010
+      targetPort: 8010

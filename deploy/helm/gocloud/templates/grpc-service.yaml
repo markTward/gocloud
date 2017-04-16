@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # TODO: name must match addressDB in restapi/endpoints; push into chart
+  name: gocloud-grpc
+spec:
+  selector:
+    app: gocloud
+    tier: backend
+    component: grpc
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000

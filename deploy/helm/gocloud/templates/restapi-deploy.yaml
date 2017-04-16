@@ -1,7 +1,8 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: "{{ .Values.service.gocloudAPI.name }}"
+  # name: {{ template "fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}

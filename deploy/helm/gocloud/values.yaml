@@ -24,15 +24,21 @@ service:
         memory: 128Mi
 
   gocloudGrpc:
+    name: gocloud-grpc
     replicaCount: 1
+    labels:
+      app: gocloud
+      tier: backend
+      component: grpc
     image:
       repository: marktward/gocloud
       tag: latest
       pullPolicy: IfNotPresent
-    name: nginx
-    type: ClusterIP
-    externalPort: 80
-    internalPort: 80
+    ports:
+      containerPort:
+        port: 8000
+        name: gocloud-be
+    command: "[\"gocloud\", \"grpc\", \"serve\"]"
     resources:
       limits:
         cpu: 100m

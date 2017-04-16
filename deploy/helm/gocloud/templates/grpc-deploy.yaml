@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{ .Values.service.gocloudGrpc.name }}"
+  # name: {{ template "fullname" . }}
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{ .Values.service.gocloudGrpc.labels.component }}"
+spec:
+  replicas: {{ .Values.service.gocloudGrpc.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.service.gocloudGrpc.labels.app }}
+        tier: {{ .Values.service.gocloudGrpc.labels.tier }}
+        component: {{ .Values.service.gocloudGrpc.labels.component }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    spec:
+      containers:
+      - name: gocloud-be
+        image: "{{ .Values.service.gocloudGrpc.image.repository}}:{{.Values.service.gocloudGrpc.image.tag }}"
+        imagePullPolicy: "{{ .Values.service.gocloudGrpc.image.pullPolicy}}"
+        ports:
+        - containerPort: {{ .Values.service.gocloudGrpc.ports.containerPort.port }}
+          name: {{ .Values.service.gocloudGrpc.ports.containerPort.name }}
+        command: {{ .Values.service.gocloudGrpc.command }}
