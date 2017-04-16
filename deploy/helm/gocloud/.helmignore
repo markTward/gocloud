@@ -1,6 +1,12 @@
 # Patterns to ignore when building packages.
 # This supports shell glob matching, relative path matching, and
 # negation (prefixed with !). Only one pattern per line.
+NOTES.txt
+deployment.yaml
+grpc-deploy.yaml
+grpc-service.yaml
+restapi-service.yaml
+service.yaml
 .DS_Store
 # Common VCS dirs
 .git/

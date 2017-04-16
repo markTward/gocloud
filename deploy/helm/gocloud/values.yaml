@@ -1,21 +1,42 @@
-# Default values for gocloud.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-replicaCount: 1
-image:
-  repository: nginx
-  tag: stable
-  pullPolicy: IfNotPresent
 service:
-  name: nginx
-  type: ClusterIP
-  externalPort: 80
-  internalPort: 80
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+  gocloudAPI:
+    name: gocloud-api
+    replicaCount: 1
+    labels:
+      app: gocloud
+      tier: frontend
+      component: web
+    image:
+      repository: marktward/gocloud
+      tag: latest
+      pullPolicy: IfNotPresent
+    ports:
+      containerPort:
+        port: 8010
+        name: gocloud-fe
+    command: "[\"gocloud\", \"restapi\", \"start\"]"
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
+  gocloudGrpc:
+    replicaCount: 1
+    image:
+      repository: marktward/gocloud
+      tag: latest
+      pullPolicy: IfNotPresent
+    name: nginx
+    type: ClusterIP
+    externalPort: 80
+    internalPort: 80
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
