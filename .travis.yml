@@ -7,6 +7,7 @@ env:
   - HELM_VERSION: v2.3.1
   - CLUSTER_NAME: k0
   - CLOUDSDK_COMPUTE_ZONE: us-west1-a
+  - CLOUDSDK_INSTALL_DIR: $HOME/google-cloud-sdk
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
@@ -22,10 +23,12 @@ before_install:
 - sudo mv linux-amd64/helm /usr/local/bin/helm && ls -la /usr/local/bin/helm
 - helm help
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then
-     curl https://sdk.cloud.google.com | bash; gcloud version; which gcloud; ls -la;
+     curl https://sdk.cloud.google.com | bash;
   fi
 - sudo gcloud --quiet components install kubectl
 - sudo gcloud --quiet components update
+- gcloud version
+- which gcloud
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
 - tar -xzf credentials.tar.gz; ls -la
 - sudo gcloud auth activate-service-account --key-file client-secret.json
@@ -33,9 +36,8 @@ before_install:
 - sudo gcloud config set container/cluster $CLUSTER_NAME
 - sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
 - sudo gcloud config list
-- ls -la /usr/local/share/google/google-cloud-sdk/bin || true
-- ls -la /opt/google-cloud-sdk/bin || true
-- sudo ln -s /usr/local/share/google/google-cloud-sdk/bin/kubectl /usr/local/bin/kubectl
+- ls -la $CLOUDSDK_INSTALL_DIR/bin || true
+- sudo ln -s $CLOUDSDK_INSTALL_DIR/bin/kubectl /usr/local/bin/kubectl
 - sudo kubectl config get-contexts
 - kubectl config get-contexts
 install:
