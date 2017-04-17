@@ -2,13 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   # TODO: name must match addressDB in restapi/endpoints; push into chart
-  name: gocloud-grpc
+  name: "{{ .Values.service.gocloudGrpc.name }}"
 spec:
   selector:
-    app: gocloud
-    tier: backend
-    component: grpc
+    app: {{ .Values.service.gocloudGrpc.labels.app }}
+    tier: {{ .Values.service.gocloudGrpc.labels.tier }}
+    component: {{ .Values.service.gocloudGrpc.labels.component }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   ports:
-    - protocol: TCP
-      port: 8000
-      targetPort: 8000
+    - protocol: {{ .Values.service.gocloudGrpc.ports.protocol }}
+      port: {{ .Values.service.gocloudGrpc.ports.targetPort }}
+      targetPort: {{ .Values.service.gocloudGrpc.ports.targetPort }}

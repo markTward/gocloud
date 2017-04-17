@@ -35,9 +35,10 @@ service:
       tag: latest
       pullPolicy: IfNotPresent
     ports:
-      containerPort:
-        port: 8000
-        name: gocloud-be
+      name: gocloud-be
+      containerPort: 8000
+      targetPort: 8000
+      protocol: TCP
     command: "[\"gocloud\", \"grpc\", \"serve\"]"
     resources:
       limits:

@@ -23,6 +23,6 @@ spec:
         image: "{{ .Values.service.gocloudGrpc.image.repository}}:{{.Values.service.gocloudGrpc.image.tag }}"
         imagePullPolicy: "{{ .Values.service.gocloudGrpc.image.pullPolicy}}"
         ports:
-        - containerPort: {{ .Values.service.gocloudGrpc.ports.containerPort.port }}
-          name: {{ .Values.service.gocloudGrpc.ports.containerPort.name }}
+        - containerPort: {{ .Values.service.gocloudGrpc.ports.containerPort }}
+          name: {{ .Values.service.gocloudGrpc.ports.name }}
         command: {{ .Values.service.gocloudGrpc.command }}

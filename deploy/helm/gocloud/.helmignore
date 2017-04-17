@@ -3,7 +3,6 @@
 # negation (prefixed with !). Only one pattern per line.
 NOTES.txt
 deployment.yaml
-grpc-service.yaml
 restapi-service.yaml
 service.yaml
 .DS_Store
