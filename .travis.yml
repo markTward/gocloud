@@ -22,7 +22,7 @@ before_install:
 - sudo mv linux-amd64/helm /usr/local/bin/helm && ls -la /usr/local/bin/helm
 - helm help
 - if [ ! -d ${HOME}/google-cloud-sdk ]; then
-     curl https://sdk.cloud.google.com | bash; gcloud version;
+     curl https://sdk.cloud.google.com | bash; gcloud version; which gcloud; ls -la;
   fi
 - sudo gcloud --quiet components install kubectl
 - sudo gcloud --quiet components update
