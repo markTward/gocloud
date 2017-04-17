@@ -43,7 +43,9 @@ script:
 - docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
-- docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG gcr.io/$GCLOUD_PROJECT_ID/gocloud:$TRAVIS_BRANCH; docker images
+- docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG gcr.io/$GCLOUD_PROJECT_ID/gocloud:$TRAVIS_BRANCH
+- docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG gcr.io/$GCLOUD_PROJECT_ID/gocloud:latest
+- docker images
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$TRAVIS_BRANCH
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
