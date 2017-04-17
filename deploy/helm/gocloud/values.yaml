@@ -11,9 +11,10 @@ service:
       tag: latest
       pullPolicy: IfNotPresent
     ports:
-      containerPort:
-        port: 8010
-        name: gocloud-fe
+      name: gocloud-fe
+      containerPort: 8010
+      targetPort: 8010
+      protocol: TCP
     command: "[\"gocloud\", \"restapi\", \"start\"]"
     resources:
       limits:

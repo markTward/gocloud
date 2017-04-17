@@ -23,6 +23,6 @@ spec:
         image: "{{ .Values.service.gocloudAPI.image.repository}}:{{.Values.service.gocloudAPI.image.tag }}"
         imagePullPolicy: "{{ .Values.service.gocloudAPI.image.pullPolicy}}"
         ports:
-        - containerPort: {{ .Values.service.gocloudAPI.ports.containerPort.port }}
-          name: {{ .Values.service.gocloudAPI.ports.containerPort.name }}
+        - containerPort: {{ .Values.service.gocloudAPI.ports.containerPort }}
+          name: {{ .Values.service.gocloudAPI.ports.name }}
         command: {{ .Values.service.gocloudAPI.command }}

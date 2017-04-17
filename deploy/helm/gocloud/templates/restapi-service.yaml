@@ -1,13 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: gocloud-api
+  name: "{{ .Values.service.gocloudAPI.name }}"
 spec:
   selector:
-    app: gocloud
-    tier: frontend
-    component: web
+    app: {{ .Values.service.gocloudAPI.labels.app }}
+    tier: {{ .Values.service.gocloudAPI.labels.tier }}
+    component: {{ .Values.service.gocloudAPI.labels.component }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   ports:
-    - protocol: "TCP"
-      port: 8010
-      targetPort: 8010
+    - protocol: {{ .Values.service.gocloudAPI.ports.protocol }}
+      port: {{ .Values.service.gocloudAPI.ports.targetPort }}
+      targetPort: {{ .Values.service.gocloudAPI.ports.targetPort }}
