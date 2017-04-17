@@ -1,3 +1,8 @@
+# gocloud
+credentials.tar.gz
+client-secret.json
+api-key.txt
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a
