@@ -36,6 +36,7 @@ before_install:
 - sudo gcloud config set container/cluster $CLUSTER_NAME
 - sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
 - sudo gcloud config list
+- sudo gcloud container clusters get-credentials $CLUSTER_NAME
 - kubectl config get-contexts || true
 - sudo kubectl config get-contexts
 install:
