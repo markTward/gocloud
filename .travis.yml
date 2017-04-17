@@ -57,6 +57,7 @@ after_success:
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
 - sudo helm list
+- export GOOGLE_APPLICATION_CREDENTIALS="./client-secret.json"
 - sudo helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
 - sudo helm list
 - heml list || true
