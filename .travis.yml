@@ -27,6 +27,7 @@ script:
 - docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
+- helm lint deploy/helm/gocloud/
 notifications:
   email: false
   slack:
