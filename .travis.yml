@@ -28,7 +28,7 @@ before_install:
 - sudo gcloud --quiet components update
 - sudo ln -s /usr/lib/google-cloud-sdk/bin/kubectl /usr/local/bin/kubectl
 - gcloud version
-- kubectl version
+- kubectl version --client=true || true
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
 - tar -xzf credentials.tar.gz; ls -la
 - sudo gcloud auth activate-service-account --key-file client-secret.json
