@@ -37,7 +37,6 @@ before_install:
 - sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
 - sudo gcloud config list
 - sudo gcloud container clusters get-credentials $CLUSTER_NAME
-- kubectl config get-contexts || true
 - sudo kubectl config get-contexts
 install:
 - go get -d -v ./...
@@ -56,7 +55,7 @@ after_success:
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$TRAVIS_BRANCH
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
-# - helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
+- helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
 notifications:
   email: false
   slack:
