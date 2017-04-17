@@ -18,6 +18,12 @@ before_install:
 - tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - sudo mv linux-amd64/helm /usr/local/bin/helm && ls -la /usr/local/bin/helm
 - helm help
+- if [ ! -d ${HOME}/google-cloud-sdk ]; then
+     curl https://sdk.cloud.google.com | bash;
+  fi
+- gcloud version
+- openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
+- tar -xzf credentials.tar.gz.enc; ls -la
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -30,14 +36,7 @@ script:
 after_success:
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
 - helm lint deploy/helm/gocloud/
-- gcloud version || true
-- if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
-- source /home/travis/google-cloud-sdk/path.bash.inc
-- gcloud version
-- tar -xzf credentials.tar.gz; ls -la
 notifications:
   email: false
   slack:
     secure: ifhkq27en11fNB4zTw5MRjn4ef+3C9NbysrH5pIVejjfQSYeqw2eIfrD/XbKiEUBlLd9LKg4FkhoHnkr9CHO2H+JkZYJWy5fuH4qPJX/m5YN92ZCuIpocFUOsr9+q1NrMDUlmVrLzTA7MTIn1RVCggDQMwL7gdkQDnTz9ROvCWQnKFYlo2PRB7E/PhSNgsBn6FvpXJLNjv640eaNI9h82n4IMzJWEjMyUJNGXxRL1gvyUGrFJ+7DavJVTbnN1zq1SBZRTgVsvCHWGR3fMjFa3Nw9YQpThR6W8LYCXclSOX+RnKmeThxaKuYjm3up2jBJFWdqxswqWQQl0J/HLuD2KGfvz3D0hgKy7ytIhOtKzJAJklR4N/GSqjYvK80CfYBdddhxAsjMp/nB0Fud5zeM6gCPzp9YxK/KLo9C3UyGV7BCci915y49g8+9gicBYlHULdD5KG4VlsFRyuVGXEI6Z7nkA6JOAaiNsWjLcPFKF9CjAn0idfrvx//sBxoSz36WDZOTxD7tWHAE0fdxvJsMOzSdEgdl/8uIDoukdw5UrG4j2UsF/wWfUf8harerktWpaYj69PzDjdc1Pn6xOziunlEzeYLC44uElSvFfAPi/ABYNk8J3SxVEXVyh/lfvqzbJfk1cQk0aT4z/j2Lq1Z50p89k/fQq1louOkAqLPxcxI=
-dd:
-- openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
