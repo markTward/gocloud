@@ -2,8 +2,6 @@
 # This supports shell glob matching, relative path matching, and
 # negation (prefixed with !). Only one pattern per line.
 NOTES.txt
-deployment.yaml
-service.yaml
 .DS_Store
 # Common VCS dirs
 .git/
