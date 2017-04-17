@@ -10,6 +10,7 @@ service:
       repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
       pullPolicy: IfNotPresent
+    serviceType: LoadBalancer
     ports:
       name: gocloud-fe
       containerPort: 8010

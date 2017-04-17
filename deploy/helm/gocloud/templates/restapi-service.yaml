@@ -12,3 +12,4 @@ spec:
     - protocol: {{ .Values.service.gocloudAPI.ports.protocol }}
       port: {{ .Values.service.gocloudAPI.ports.targetPort }}
       targetPort: {{ .Values.service.gocloudAPI.ports.targetPort }}
+  type: {{ default "ClusterIP" .Values.service.gocloudAPI.serviceType | quote }}
