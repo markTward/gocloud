@@ -7,6 +7,7 @@ env:
   - HELM_VERSION: v2.3.1
   - CLUSTER_NAME: k0
   - CLOUDSDK_COMPUTE_ZONE: us-west1-a
+  - GCLOUD_PROJECT_ID: k8sdemo-159622
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
@@ -20,7 +21,7 @@ before_install:
 - git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
 - wget "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
-- sudo mv linux-amd64/helm /usr/local/bin/helm && ls -la /usr/local/bin/helm
+- sudo mv linux-amd64/helm /usr/local/bin/helm
 - helm help
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
 - source /home/travis/google-cloud-sdk/path.bash.inc
@@ -30,7 +31,7 @@ before_install:
 - gcloud version
 - kubectl version --client=true || true
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
-- tar -xzf credentials.tar.gz; ls -la
+- tar -xzf credentials.tar.gz
 - sudo gcloud auth activate-service-account --key-file client-secret.json
 - sudo gcloud config set project $GCLOUD_PROJECT_ID
 - sudo gcloud config set container/cluster $CLUSTER_NAME
@@ -55,7 +56,7 @@ after_success:
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$TRAVIS_BRANCH
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
-- helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
+- sudo helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
 notifications:
   email: false
   slack:
