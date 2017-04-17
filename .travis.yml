@@ -11,7 +11,7 @@ before_install:
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
 - mkdir -p $GOCLOUD_CICD_DIR
 - git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
-- wget "https://storage.googleapis.com/kubernetes-helm/${HELM_VERSION}-linux-amd64.tar.gz"
+- wget "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - mv linux-amd64/helm /usr/local/bin/helm
 - helm help
