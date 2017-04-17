@@ -7,7 +7,7 @@ service:
       tier: frontend
       component: web
     image:
-      repository: marktward/gocloud
+      repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
       pullPolicy: IfNotPresent
     ports:
@@ -32,7 +32,7 @@ service:
       tier: backend
       component: grpc
     image:
-      repository: marktward/gocloud
+      repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
       pullPolicy: IfNotPresent
     ports:
