@@ -19,7 +19,7 @@ script:
 - export DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
 - docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
-- "./$GOCLOUD_CICD_DIR/deploy/travis/docker_push.sh"
+- "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
 notifications:
   email: false
   slack:
