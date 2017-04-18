@@ -55,15 +55,17 @@ script:
 - docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
+- docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG gcr.io/$GCLOUD_PROJECT_ID/gocloud:$DOCKER_COMMIT_TAG
 - docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG gcr.io/$GCLOUD_PROJECT_ID/gocloud:$TRAVIS_BRANCH
 - docker tag $DOCKER_REPO:$DOCKER_COMMIT_TAG gcr.io/$GCLOUD_PROJECT_ID/gocloud:latest
 - docker images
+- sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$DOCKER_COMMIT_TAG
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$TRAVIS_BRANCH
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
 - sudo helm list --all
 - sudo kubectl get svc,deploy,pod --namespace=gocloud
-- sudo helm upgrade --install gocloud --namespace=gocloud deploy/helm/gocloud/
+- sudo helm upgrade --install gocloud --namespace=gocloud --set service.gocloudAPI.image.tag=$DOCKER_COMMIT_TAG --set service.gocloudGrpc.image.tag=$DOCKER_COMMIT_TAG deploy/helm/gocloud/
 - sudo helm list --all
 - sudo kubectl get svc,deploy,pod --namespace=gocloud
 notifications:
