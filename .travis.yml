@@ -24,7 +24,6 @@ before_install:
 - sudo mv linux-amd64/helm /usr/local/bin/helm
 - helm help
 - whoami
-- echo home dir: $HOME
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
 - ls -laR $HOME/google-cloud-sdk || true
 - gcloud --quiet components install kubectl
