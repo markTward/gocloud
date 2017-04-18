@@ -16,7 +16,6 @@ services:
 before_install:
 - pwd
 - env | grep -v DOCKER | grep -v GOCLOUD | sort
-- sudo env | grep -v DOCKER | grep -v GOCLOUD | sort
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
 - mkdir -p $GOCLOUD_CICD_DIR
 - git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
@@ -35,7 +34,6 @@ before_install:
 - tar -xzf credentials.tar.gz
 - sudo gcloud auth activate-service-account --key-file client-secret.json
 - sudo gcloud auth list
-- sudo gcloud auth login
 - sudo gcloud config set project $GCLOUD_PROJECT_ID
 - sudo gcloud config set container/cluster $CLUSTER_NAME
 - sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
@@ -44,7 +42,8 @@ before_install:
 - export GOOGLE_APPLICATION_CREDENTIALS="$TRAVIS_BUILD_DIR/client-secret.json"
 - ls -la $GOOGLE_APPLICATION_CREDENTIALS
 - sudo kubectl config get-contexts
-- sudo -E helm list --all
+- sudo kubectl get namespaces
+- sudo helm list --all
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
