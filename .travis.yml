@@ -42,7 +42,7 @@ before_install:
 - export GOOGLE_APPLICATION_CREDENTIALS="$TRAVIS_BUILD_DIR/client-secret.json"
 - ls -la $GOOGLE_APPLICATION_CREDENTIALS
 - sudo kubectl config get-contexts
-- sudo helm list
+- sudo -E helm --all
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -60,10 +60,8 @@ after_success:
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$TRAVIS_BRANCH
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
-- sudo helm list
-- sudo helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
-- sudo helm list
-- heml list || true
+- sudo -E helm upgrade deploy/helm/gocloud/ --install gocloud --namespace=gocloud
+- sudo -E helm list --all
 notifications:
   email: false
   slack:
