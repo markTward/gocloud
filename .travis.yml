@@ -35,6 +35,7 @@ before_install:
 - tar -xzf credentials.tar.gz
 - sudo gcloud auth activate-service-account --key-file client-secret.json
 - sudo gcloud auth list
+- sudo gcloud auth login
 - sudo gcloud config set project $GCLOUD_PROJECT_ID
 - sudo gcloud config set container/cluster $CLUSTER_NAME
 - sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
