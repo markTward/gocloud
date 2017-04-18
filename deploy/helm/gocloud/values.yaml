@@ -9,7 +9,7 @@ service:
     image:
       repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
     serviceType: LoadBalancer
     ports:
       name: gocloud-fe
@@ -35,7 +35,7 @@ service:
     image:
       repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
     ports:
       name: gocloud-be
       containerPort: 8000
