@@ -61,8 +61,11 @@ after_success:
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:$TRAVIS_BRANCH
 - sudo gcloud docker -- push gcr.io/${GCLOUD_PROJECT_ID}/gocloud:latest
 - helm lint deploy/helm/gocloud/
-- sudo -E helm upgrade --install gocloud --namespace=gocloud deploy/helm/gocloud/
-- sudo -E helm list --all
+- sudo helm list --all
+- sudo kubectl get svc,deploy,pod --namespace=gocloud
+- sudo helm upgrade --install gocloud --namespace=gocloud deploy/helm/gocloud/
+- sudo helm list --all
+- sudo kubectl get svc,deploy,pod --namespace=gocloud
 notifications:
   email: false
   slack:
