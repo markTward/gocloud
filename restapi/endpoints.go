@@ -91,6 +91,6 @@ func (api HealthCheckEndpoint) HealthCheck() int {
 
 func (api *RestAPI) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(api.HealthCheck())
-	fmt.Fprint(w, "OKEYDOKEY")
+	fmt.Fprint(w, "OKEYDOKEY!!!")
 	log.Println(r.URL.Path, http.StatusOK)
 }
