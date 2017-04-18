@@ -40,6 +40,7 @@ before_install:
 - sudo gcloud config list
 - sudo gcloud container clusters get-credentials $CLUSTER_NAME
 - export GOOGLE_APPLICATION_CREDENTIALS="$TRAVIS_BUILD_DIR/client-secret.json"
+- ls -la $GOOGLE_APPLICATION_CREDENTIALS
 - sudo kubectl config get-contexts
 - sudo helm list
 install:
