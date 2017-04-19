@@ -69,8 +69,8 @@ before_deploy:
 # BUG: helm fails to obtain k8s cluster access token; must run kubectl command first
 - sudo kubectl get namespaces
 # helm / k8s state before deploy
-- helm lint --strict --debug deploy/helm/gocloud/
-- helm list
+- sudo helm lint --strict --debug deploy/helm/gocloud/
+- sudo helm list
 deploy:
   provider: script
   script: deploy/travis/deploy_k8s.sh
