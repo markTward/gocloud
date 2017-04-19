@@ -78,7 +78,7 @@ deploy:
     # tags: true
     all_branches: true
 after_deploy:
-- helm list
+- sudo helm list
 - sudo kubectl get svc,deploy,pod --namespace=gocloud
 notifications:
   email: false
