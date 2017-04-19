@@ -66,9 +66,9 @@ after_success:
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts
+# helm / k8s state before deploy
 # BUG: helm fails to obtain k8s cluster access token; must run kubectl command first
 - sudo kubectl get namespaces
-# helm / k8s state before deploy
 - sudo helm lint --strict --debug deploy/helm/gocloud/
 - sudo helm list
 deploy:
@@ -78,8 +78,8 @@ deploy:
     # tags: true
     all_branches: true
 after_deploy:
-- sudo helm list
 - sudo kubectl get svc,deploy,pod --namespace=gocloud
+- sudo helm list
 notifications:
   email: false
   slack:
