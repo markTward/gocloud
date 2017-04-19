@@ -26,13 +26,12 @@ install:
 - wget "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - sudo mv linux-amd64/helm /usr/local/bin/helm
-- helm version
+- helm version --client
 script:
 - go test -v ./...
 - export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
 - export DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
 - docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
-- helm lint deploy/helm/gocloud/
 after_success:
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
 # TODO: migrate into script
@@ -70,14 +69,17 @@ before_deploy:
 # BUG: helm fails to obtain k8s cluster access token; must run kubectl command first
 - sudo kubectl get namespaces
 # helm / k8s state before deploy
-- helm list --all
-- sudo kubectl get svc,deploy,pod --namespace=gocloud
+- helm lint --strict --debug deploy/helm/gocloud/
+- helm list
 deploy:
   provider: script
   script: deploy/travis/deploy_k8s.sh
   on:
     tags: true
     all_branches: true
+after_deploy:
+- helm list
+- sudo kubectl get svc,deploy,pod --namespace=gocloud
 notifications:
   email: false
   slack:
