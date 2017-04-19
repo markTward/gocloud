@@ -75,7 +75,7 @@ deploy:
   provider: script
   script: deploy/travis/deploy_k8s.sh
   on:
-    tags: true
+    # tags: true
     all_branches: true
 after_deploy:
 - helm list
