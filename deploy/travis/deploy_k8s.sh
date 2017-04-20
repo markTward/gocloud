@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# TODO: make namespace and template dir args
+# TODO: change positional args to flags ...OR... create python version anticipating reading in workflow JSON config
 
 echo "helm/k8s install"
 echo "args: $@"
@@ -34,8 +34,7 @@ echo project: $GOCLOUD_PROJECT_NAME
 echo branch: $TRAVIS_BRANCH
 echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
 
-# sudo helm upgrade \
-helm upgrade \
+sudo helm upgrade \
 $DRYRUN_OPTION \
 --debug \
 --install $GOCLOUD_PROJECT_NAME \
