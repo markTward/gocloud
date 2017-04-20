@@ -19,12 +19,11 @@ echo project: $GOCLOUD_PROJECT_NAME
 echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
 echo dryrun: $DRYRUN_OPTION
 
-sudo helm upgrade \
+sudo helm upgrade deploy/helm/gocloud \
 --debug --$DRYRUN_OPTION \
 --install $GOCLOUD_PROJECT_NAME \
 --namespace=gocloud \
 --set service.gocloudAPI.image.repository=$DOCKER_REPO \
 --set service.gocloudAPI.image.tag=$DOCKER_COMMIT_TAG \
 --set service.gocloudGrpc.image.repository=$DOCKER_REPO \
---set service.gocloudGrpc.image.tag=$DOCKER_COMMIT_TAG \
-deploy/helm/gocloud
+--set service.gocloudGrpc.image.tag=$DOCKER_COMMIT_TAG
