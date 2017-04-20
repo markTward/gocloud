@@ -68,7 +68,8 @@ before_deploy:
 deploy:
   # deploy develop to the staging environment
   - provider: script
-    script: deploy/travis/deploy_k8s.sh NODEPLOY DRYRUN
+    script: deploy/travis/deploy_k8s.sh testDeployToKubernetes
+    # script: deploy/travis/deploy_k8s.sh NODEPLOY DRYRUN
     on:
       all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^(dev$|^feature-.*)"
