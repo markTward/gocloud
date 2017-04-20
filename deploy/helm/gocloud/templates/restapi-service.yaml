@@ -1,12 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: "{{ .Values.service.gocloudAPI.name }}"
+  # name: "{{ .Values.service.gocloudAPI.name }}"
+  # name: {{ template "fullname" . }}-api
+  name: {{ .Release.Name }}-api
 spec:
   selector:
     app: {{ .Values.service.gocloudAPI.labels.app }}
     tier: {{ .Values.service.gocloudAPI.labels.tier }}
-    component: {{ .Values.service.gocloudAPI.labels.component }}
+    component: {{.Release.Name}}-{{ .Values.service.gocloudAPI.labels.component }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   ports:
     - protocol: {{ .Values.service.gocloudAPI.ports.protocol }}

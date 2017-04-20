@@ -13,11 +13,11 @@ fi
 if [[ $# -ne 3 ]]
 then
   echo "error: incorrect number of required positional args"
-  echo "usage: deploy_k8s.sh deploy-type dry-run namespace"
+  echo "usage: deploy_k8s.sh release-name dry-run namespace"
   exit 1
 fi
 
-DEPLOY_TYPE=$1
+RELEASE_NAME=$1
 DRYRUN=$2
 NAMESPACE=$3
 
@@ -27,10 +27,9 @@ if [ $DRYRUN == "DRYRUN" ];
     echo "using --dry-run option; service not deployed."
 fi
 
-echo deployment type: $DEPLOY_TYPE
+echo release name: $RELEASE_NAME
 echo dryrun: $DRYRUN_OPTION
 echo namespace: $NAMESPACE
-echo project: $GOCLOUD_PROJECT_NAME
 echo branch: $TRAVIS_BRANCH
 echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
 
@@ -42,7 +41,7 @@ sudo kubectl create namespace $NAMESPACE || true
 sudo helm upgrade \
 $DRYRUN_OPTION \
 --debug \
---install $GOCLOUD_PROJECT_NAME \
+--install $RELEASE_NAME \
 --namespace=$NAMESPACE \
 --set service.gocloudAPI.image.repository=$DOCKER_REPO \
 --set service.gocloudAPI.image.tag=$DOCKER_COMMIT_TAG \

@@ -5,7 +5,7 @@ service:
     labels:
       app: gocloud
       tier: frontend
-      component: web
+      component: api
     image:
       repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
