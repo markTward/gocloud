@@ -34,6 +34,11 @@ echo project: $GOCLOUD_PROJECT_NAME
 echo branch: $TRAVIS_BRANCH
 echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
 
+# BUG: helm upgrade` does not re-create namespace if it's been deleted. https://github.com/kubernetes/helm/issues/2013
+# create namespace all cases ignoring error
+sudo kubectl create namespace $NAMESPACE || true
+
+# upsert helm release
 sudo helm upgrade \
 $DRYRUN_OPTION \
 --debug \
