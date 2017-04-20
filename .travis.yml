@@ -10,6 +10,7 @@ env:
   - GCLOUD_PROJECT_ID: k8sdemo-159622
   - GOCLOUD_PROJECT_NAME=gocloud
   - DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
+  - BRANCH_REGEX="^(master$|release//*|pr/.*)"
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
@@ -53,7 +54,8 @@ script:
 - go test -v ./...
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
-- if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi
+# select docker repo target by branch
+- "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
 before_deploy:
 # show k8s context
