@@ -55,7 +55,7 @@ script:
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
 # select docker repo target by branch
-- "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
+# - "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
 before_deploy:
 # show k8s context
@@ -68,9 +68,14 @@ before_deploy:
 deploy:
   # deploy develop to the staging environment
   - provider: script
+    script: deploy/travis/deploy_k8s.sh NODEPLOY DRYRUN
+    on:
+      branch: /^(dev$|^feature-.*)/
+  # deploy develop to the staging environment
+  - provider: script
     script: deploy/travis/deploy_k8s.sh STAGING
     on:
-      branch: /^(dev$|^feature-.*|^pr/.*)/
+      branch: /^pr/.*/
   # deploy master to production
   - provider: script
     script: deploy/travis/deploy_k8s.sh PRODUCTION
