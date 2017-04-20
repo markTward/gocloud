@@ -70,11 +70,13 @@ deploy:
   - provider: script
     script: deploy/travis/deploy_k8s.sh NODEPLOY DRYRUN
     on:
+      all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^(dev$|^feature-.*)"
   # deploy develop to the staging environment
   - provider: script
     script: deploy/travis/deploy_k8s.sh STAGING
     on:
+      all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^pr/.*"
   # deploy master to production
   - provider: script

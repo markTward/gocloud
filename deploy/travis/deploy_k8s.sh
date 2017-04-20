@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# TODO: make namespace and template dir args
+
 echo "helm install start"
 echo "args: $@"
 
