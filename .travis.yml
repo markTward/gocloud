@@ -2,24 +2,111 @@ language: go
 sudo: required
 go:
 - 1.8.x
+env:
+  global:
+  - HELM_VERSION: v2.3.1
+  - CLUSTER_NAME: k0
+  - CLOUDSDK_COMPUTE_ZONE: us-west1-a
+  - GCLOUD_PROJECT_ID: k8sdemo-159622
+  - GOCLOUD_PROJECT_NAME=gocloud
+  - DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
+  - BRANCH_REGEX="^(master$|release//*|pr/.*)"
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
 services:
 - docker
 before_install:
 - pwd
+- env | grep -v DOCKER | grep -v GOCLOUD | sort
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
 - mkdir -p $GOCLOUD_CICD_DIR
 - git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
 install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
+# install helm
+- wget "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+- tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
+- sudo mv linux-amd64/helm /usr/local/bin/helm
+- helm version --client
+# install gcloud && kubectl
+- if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
+- sudo gcloud --quiet components install kubectl
+- sudo gcloud --quiet components update
+- sudo ln -s /usr/lib/google-cloud-sdk/bin/kubectl /usr/local/bin/kubectl
+- which gcloud || true
+- which kubectl || true
+- gcloud version
+- kubectl version --client=true || true
+# gcloud service account credentials
+- openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
+- tar -xzf credentials.tar.gz
+- sudo gcloud auth activate-service-account --key-file client-secret.json
+- sudo gcloud auth list
+# gcloud configurations
+- sudo gcloud config set project $GCLOUD_PROJECT_ID
+- sudo gcloud config set container/cluster $CLUSTER_NAME
+- sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+- sudo gcloud config list
+- sudo gcloud container clusters get-credentials $CLUSTER_NAME
 script:
-- env | grep TRAVIS | sort
 - go test -v ./...
-- export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]')
-- export DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
-- docker build -t $DOCKER_REPO:$DOCKER_COMMIT_TAG -f Dockerfile .
+- docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
+# select docker repo target by branch
+# - "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
 - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
+before_deploy:
+# show k8s context
+- sudo kubectl config get-contexts
+# helm / k8s state before deploy
+# BUG: helm fails to obtain k8s cluster access token; must run kubectl command first
+- sudo kubectl get namespaces
+- sudo helm lint --strict --debug deploy/helm/gocloud/
+- sudo helm list
+# HACK: need to map branch to namespace for multiple actions; logic match deploy provider condition
+- 'if [ $TRAVIS_BRANCH == "master" ];
+then NAMESPACE=gocloud;
+elif [ $TRAVIS_BRANCH == "dev" ];
+then NAMESPACE=gocloud-dev;
+elif [ $TRAVIS_EVENT_TYPE == "stg" ];
+then NAMESPACE=gocloud-stg;
+elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]];
+then NAMESPACE=gocloud-$TRAVIS_BRANCH; echo "feature branch $TRAVIS_BRANCH not deployed";
+else echo "no branch $TRAVIS_BRANCH namespace match"; NAMESPACE=; fi'
+deploy:
+  # feature branch dryrun
+  - provider: script
+    on:
+      all_branches: true
+      condition: "$TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*)"
+    script: deploy/travis/deploy_k8s.sh FEATURE DRYRUN $NAMESPACE
+  # deploy to dev environment
+  - provider: script
+    on:
+      branch: dev
+    script: deploy/travis/deploy_k8s.sh DEV LIVE $NAMESPACE
+  # deploy PRs to staging
+  - provider: script
+    on:
+      branch: stg
+    script: deploy/travis/deploy_k8s.sh STAGING LIVE $NAMESPACE
+  # deploy master to production
+  - provider: script
+    on:
+      branch: master
+    script: deploy/travis/deploy_k8s.sh PRODUCTION LIVE $NAMESPACE
+  # TODO: tag handling
+  # - provider: script
+  # script: deploy/travis/deploy_k8s.sh
+  # on:
+  #   # tags: true
+  #   # condition: "$TRAVIS_TAG =~ ^release.*$"
+  #   all_branches: true
+after_deploy:
+- sudo kubectl get svc,deploy,pod --namespace=$NAMESPACE
+- sudo helm list
 notifications:
   email: false
   slack:

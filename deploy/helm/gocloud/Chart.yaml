@@ -1,0 +1,10 @@
+apiVersion: v1
+description: A Helm chart for Gocloud
+name: gocloud
+version: 0.1.1
+home: https://github.com/markTward/gocloud
+sources:
+  - https://github.com/markTward/gocloud
+maintainers:
+  - name: Mark Ward
+    email: mark.t.ward@gmail.com

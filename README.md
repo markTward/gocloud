@@ -1,5 +1,6 @@
 #TODO
 travis deploy using custom scripts: https://docs.travis-ci.com/user/deployment/script
+travis + gcp: https://cloud.google.com/solutions/continuous-delivery-with-travis-ci
 Split apart grpc and restapi into different repos/services  
 Helm deployment to k8s added
 Makefile for docker/deploy scripts
