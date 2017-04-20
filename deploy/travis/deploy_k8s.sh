@@ -15,8 +15,12 @@ if [[ $# -eq 2 ]] && [ $2 == "DRYRUN" ];
     echo "using --dry-run option; service not deployed."
 fi
 
+echo project: $GOCLOUD_PROJECT_NAME
+echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
+echo dryrun: $DRYRUN_OPTION
+
 sudo helm upgrade \
--- debug --$DRYRUN_OPTION \
+--debug --$DRYRUN_OPTION \
 --install $GOCLOUD_PROJECT_NAME \
 --namespace=gocloud \
 --set service.gocloudAPI.image.repository=$DOCKER_REPO \
