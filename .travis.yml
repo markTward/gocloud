@@ -65,29 +65,31 @@ before_deploy:
 - sudo kubectl get namespaces
 - sudo helm lint --strict --debug deploy/helm/gocloud/
 - sudo helm list
+# HACK: need to map branch to namespace for multiple actions; logic match deploy provider condition
+- if [ $TRAVIS_BRANCH == "master" ]; then NAMESPACE=gocloud; elif [ $TRAVIS_BRANCH == "dev" ]; then NAMESPACE=gocloud-dev; elif [[ $TRAVIS_BRANCH =~ ^pr/.* ]]; then NAMESPACE=gocloud-stg; elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]]; then NAMESPACE=gocloud-$TRAVIS_BRANCH; else echo "no branch $TRAVIS_BRANCH namespace match"; NAMESPACE=; fi
 deploy:
   # feature branch dryrun
   - provider: script
     on:
       all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*)"
-    script: deploy/travis/deploy_k8s.sh FEATURE DRYRUN no-install
+    script: deploy/travis/deploy_k8s.sh FEATURE DRYRUN $NAMESPACE
   # deploy to dev environment
   - provider: script
     on:
       branch: dev
-    script: deploy/travis/deploy_k8s.sh DEV LIVE gocloud-dev
+    script: deploy/travis/deploy_k8s.sh DEV LIVE $NAMESPACE
   # deploy PRs to staging
   - provider: script
     on:
       all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^pr/.*"
-    script: deploy/travis/deploy_k8s.sh STAGING LIVE gocloud-stg
+    script: deploy/travis/deploy_k8s.sh STAGING LIVE $NAMESPACE
   # deploy master to production
   - provider: script
     on:
       branch: master
-    script: deploy/travis/deploy_k8s.sh PRODUCTION LIVE gocloud
+    script: deploy/travis/deploy_k8s.sh PRODUCTION LIVE $NAMESPACE
   # TODO: tag handling
   # - provider: script
   # script: deploy/travis/deploy_k8s.sh
@@ -96,7 +98,7 @@ deploy:
   #   # condition: "$TRAVIS_TAG =~ ^release.*$"
   #   all_branches: true
 after_deploy:
-- sudo kubectl get svc,deploy,pod --namespace=gocloud
+- sudo kubectl get svc,deploy,pod --namespace=$NAMESPACE
 - sudo helm list
 notifications:
   email: false
