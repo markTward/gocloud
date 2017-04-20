@@ -66,24 +66,29 @@ before_deploy:
 - sudo helm lint --strict --debug deploy/helm/gocloud/
 - sudo helm list
 deploy:
-  # deploy develop to the staging environment
+  # feature branch dryrun
   - provider: script
-    script: deploy/travis/deploy_k8s.sh testDeployToKubernetes
-    # script: deploy/travis/deploy_k8s.sh NODEPLOY DRYRUN
     on:
       all_branches: true
-      condition: "$TRAVIS_BRANCH =~ ^(dev$|^feature-.*)"
-  # deploy develop to the staging environment
+      condition: "$TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*)"
+    script: deploy/travis/deploy_k8s.sh FEATURE DRYRUN no-install
+  # deploy to dev environment
   - provider: script
-    script: deploy/travis/deploy_k8s.sh STAGING
+    on:
+      branch: dev
+    script: deploy/travis/deploy_k8s.sh DEV LIVE gocloud-dev
+  # deploy PRs to staging
+  - provider: script
     on:
       all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^pr/.*"
+    script: deploy/travis/deploy_k8s.sh STAGING LIVE gocloud-stg
   # deploy master to production
   - provider: script
-    script: deploy/travis/deploy_k8s.sh PRODUCTION
     on:
       branch: master
+    script: deploy/travis/deploy_k8s.sh PRODUCTION LIVE gocloud
+  # TODO: tag handling
   # - provider: script
   # script: deploy/travis/deploy_k8s.sh
   # on:
