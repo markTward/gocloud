@@ -70,10 +70,10 @@ before_deploy:
 then NAMESPACE=gocloud;
 elif [ $TRAVIS_BRANCH == "dev" ];
 then NAMESPACE=gocloud-dev;
-elif [ $TRAVIS_EVENT_TYPE == "pull_request" ];
-then NAMESPACE=gocloud-pr-$TRAVIS_PULL_REQUEST;
+elif [ $TRAVIS_EVENT_TYPE == "stg" ];
+then NAMESPACE=gocloud-stg;
 elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]];
-then NAMESPACE=gocloud-$TRAVIS_BRANCH;
+then NAMESPACE=gocloud-$TRAVIS_BRANCH; echo "feature branch $TRAVIS_BRANCH not deployed";
 else echo "no branch $TRAVIS_BRANCH namespace match"; NAMESPACE=; fi'
 deploy:
   # feature branch dryrun
@@ -90,8 +90,7 @@ deploy:
   # deploy PRs to staging
   - provider: script
     on:
-      all_branches: true
-      condition: $TRAVIS_EVENT_TYPE = pull_request
+      branch: stg
     script: deploy/travis/deploy_k8s.sh STAGING LIVE $NAMESPACE
   # deploy master to production
   - provider: script
