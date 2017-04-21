@@ -70,7 +70,7 @@ before_deploy:
 then NAMESPACE=gocloud;
 elif [ $TRAVIS_BRANCH == "dev" ];
 then NAMESPACE=gocloud-dev;
-elif [ $TRAVIS_EVENT_TYPE == "stg" ];
+elif [ $TRAVIS_BRANCH == "stg" ];
 then NAMESPACE=gocloud-stg;
 elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]];
 then NAMESPACE=gocloud-$TRAVIS_BRANCH; echo "feature branch $TRAVIS_BRANCH not deployed";
@@ -81,7 +81,8 @@ deploy:
     on:
       all_branches: true
       condition: "$TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*)"
-    script: deploy/travis/deploy_k8s.sh gocloud-$TRAVIS_BRANCH DRYRUN $NAMESPACE
+    script: deploy/travis/deploy_k8s.sh gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
+    # script: deploy/travis/deploy_k8s.sh gocloud-$TRAVIS_BRANCH DRYRUN $NAMESPACE
   # deploy to dev environment
   - provider: script
     on:

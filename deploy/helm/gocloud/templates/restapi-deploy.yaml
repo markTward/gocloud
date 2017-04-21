@@ -27,3 +27,8 @@ spec:
         - containerPort: {{ .Values.service.gocloudAPI.ports.containerPort }}
           name: {{ .Values.service.gocloudAPI.ports.name }}
         command: {{ .Values.service.gocloudAPI.command }}
+        env:
+        - name: GRPC_HW_SERVICE_NAME
+          value: "{{ .Release.Name }}-grpc"
+        - name: GRPC_HW_SERVICE_PORT
+          value: "{{ .Values.service.gocloudGrpc.servicePort }}"

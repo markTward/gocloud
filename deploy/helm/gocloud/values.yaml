@@ -11,6 +11,8 @@ service:
       tag: latest
       pullPolicy: Always
     serviceType: LoadBalancer
+    serviceName: gocloud-api
+    servicePort: 8010
     ports:
       name: gocloud-fe
       containerPort: 8010
@@ -36,6 +38,8 @@ service:
       repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
       pullPolicy: Always
+    serviceName: gocloud-grpc
+    servicePort: 8000
     ports:
       name: gocloud-be
       containerPort: 8000

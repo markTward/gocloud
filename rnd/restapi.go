@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type RestAPI struct {
 	Name string
@@ -53,6 +56,29 @@ func (api *RestAPI) Init(name string) error {
 	return nil
 }
 
+const (
+	// TODO: addressDB must match k8s charts and template values
+	addressDB          = "gocloud-grpc:8000"
+	defaultServiceName = "gocloud-grpc"
+	defaultServicePort = "8888"
+	defaultName        = "World"
+	timeout            = 1
+)
+
+func getServiceAddress() string {
+	// svc := os.Getenv("GRPC_HW_SERVICE_NAME")
+	// port := os.Getenv("GRPC_HW_SERVICE_PORT")
+	var svc, port string
+
+	if svc = os.Getenv("GRPC_HW_SERVICE_NAME"); svc == "" {
+		svc = defaultServiceName
+	}
+	if port = os.Getenv("GRPC_HW_SERVICE_PORT"); port == "" {
+		port = defaultServicePort
+	}
+	return fmt.Sprintf("%s:%s\n", svc, port)
+}
+
 func main() {
 
 	api := &RestAPI{}
@@ -62,5 +88,8 @@ func main() {
 	for _, ep := range api.Endpoints {
 		fmt.Println("\tEndpoint:", ep)
 	}
+
+	serviceAddress := getServiceAddress()
+	fmt.Println("serviceAddress =", serviceAddress)
 
 }
