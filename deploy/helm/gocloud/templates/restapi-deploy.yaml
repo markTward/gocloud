@@ -30,4 +30,4 @@ spec:
         - name: GRPC_HW_SERVICE_NAME
           value: {{ .Release.Name }}-grpc
         - name: GRPC_HW_SERVICE_PORT
-          value: {{ .Values.service.gocloudGrpc.servicePort }}
+          value: "{{ .Values.service.gocloudGrpc.servicePort }}"
