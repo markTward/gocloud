@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +27,7 @@ var restapiCmd = &cobra.Command{
 	Long:  `A longer description of restapi service management`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: how to show nested subcommands
-		log.Println("TODO: show nested subcommands")
+		fmt.Println("TODO: show nested subcommands")
 	},
 }
 

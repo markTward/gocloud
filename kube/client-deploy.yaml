@@ -1,21 +1,21 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: gocloud-api
+  name: greeter-web
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: gocloud
+        app: greeter
         tier: frontend
         component: web
     spec:
       containers:
-      - name: gocloud-fe
+      - name: greeter-fe
         imagePullPolicy: Always
-        image: marktward/gocloud:latest
+        image: gocloud:latest
         ports:
         - containerPort: 8010
-          name: gocloud-fe
-        command: ["gocloud", "restapi", "start"]
+          name: greeter-fe
+        command: ["greeter_client"]
