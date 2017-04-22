@@ -57,7 +57,8 @@ script:
 after_success:
 # select docker repo target by branch
 # - "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
-- "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
+# - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
+- "./deploy/travis/docker_push.sh"
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts

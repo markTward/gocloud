@@ -3,14 +3,16 @@
 echo "docker_push.sh script start"
 docker version
 
-if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]];
-then
-  DOCKER_REPO=gcr.io/$GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME;
-  REPO_TARGET=gcr
-else
-  DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]');
-  REPO_TARGET=docker
-fi
+# if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]];
+# then
+#   DOCKER_REPO=gcr.io/$GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME;
+#   REPO_TARGET=gcr
+# else
+#   DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]');
+#   REPO_TARGET=docker
+# fi
+
+DOCKER_REPO=gcr.io/$GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME
 
 echo "DOCKER_REPO: $DOCKER_REPO"
 echo "DOCKER_COMMIT_TAG: $DOCKER_COMMIT_TAG"
@@ -19,17 +21,12 @@ echo "BRANCH_REGEX: $BRANCH_REGEX"
 echo "TRAVIS_BRANCH: $TRAVIS_BRANCH"
 echo "TRAVIS_EVENT_TYPE: $TRAVIS_EVENT_TYPE"
 
-# push image with commit tag for all cases
+# tag images
 docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:$DOCKER_COMMIT_TAG;
-
-# standard push
-if [ "$TRAVIS_EVENT_TYPE" == "push" ]; then
-  docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:$TRAVIS_BRANCH;
-  if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:latest;
-  fi
+docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:$TRAVIS_BRANCH;
+if [ "$TRAVIS_BRANCH" == "master" ]; then
+  docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:latest;
 fi
-
 docker images
 
 if [ $REPO_TARGET == "gcr"]; then
