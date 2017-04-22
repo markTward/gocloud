@@ -75,7 +75,7 @@ before_deploy:
 # elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]];
 # then NAMESPACE=gocloud-$TRAVIS_BRANCH; echo "feature branch $TRAVIS_BRANCH not deployed";
 # else echo "no branch $TRAVIS_BRANCH namespace match"; NAMESPACE=; fi'
-NAMESPACE=gocloud
+- NAMESPACE=gocloud
 deploy:
   # feature branch dryrun
   - provider: script
