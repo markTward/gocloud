@@ -48,7 +48,7 @@ func getServiceAddress() string {
 		port = defaultServicePort
 	}
 
-	return fmt.Sprintf("%s:%s\n", svc, port)
+	return fmt.Sprintf("%s:%s", svc, port)
 }
 
 func (api HelloWorldEndpoint) HelloWorld(names []string) (string, error) {

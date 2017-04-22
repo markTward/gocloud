@@ -66,15 +66,16 @@ before_deploy:
 - sudo helm lint --strict --debug deploy/helm/gocloud/
 - sudo helm list
 # HACK: need to map branch to namespace for multiple actions; logic match deploy provider condition
-- 'if [ $TRAVIS_BRANCH == "master" ];
-then NAMESPACE=gocloud;
-elif [ $TRAVIS_BRANCH == "dev" ];
-then NAMESPACE=gocloud-dev;
-elif [ $TRAVIS_BRANCH == "stg" ];
-then NAMESPACE=gocloud-stg;
-elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]];
-then NAMESPACE=gocloud-$TRAVIS_BRANCH; echo "feature branch $TRAVIS_BRANCH not deployed";
-else echo "no branch $TRAVIS_BRANCH namespace match"; NAMESPACE=; fi'
+# - 'if [ $TRAVIS_BRANCH == "master" ];
+# then NAMESPACE=gocloud;
+# elif [ $TRAVIS_BRANCH == "dev" ];
+# then NAMESPACE=gocloud-dev;
+# elif [ $TRAVIS_BRANCH == "stg" ];
+# then NAMESPACE=gocloud-stg;
+# elif [[ $TRAVIS_BRANCH =~ ^(feature$|feature/.*|feature-.*) ]];
+# then NAMESPACE=gocloud-$TRAVIS_BRANCH; echo "feature branch $TRAVIS_BRANCH not deployed";
+# else echo "no branch $TRAVIS_BRANCH namespace match"; NAMESPACE=; fi'
+NAMESPACE=gocloud
 deploy:
   # feature branch dryrun
   - provider: script

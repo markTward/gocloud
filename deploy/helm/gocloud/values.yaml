@@ -38,6 +38,7 @@ service:
       repository: gcr.io/k8sdemo-159622/gocloud
       tag: latest
       pullPolicy: Always
+    serviceType: ClusterIP
     serviceName: gocloud-grpc
     servicePort: 8000
     ports:
