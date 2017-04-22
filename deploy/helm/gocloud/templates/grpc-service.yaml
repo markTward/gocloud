@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # name: {{ template "fullname" . }}-grpc
+  name: {{ .Release.Name }}-grpc
+spec:
+  selector:
+    app: {{ .Values.service.gocloudGrpc.labels.app }}
+    tier: {{ .Values.service.gocloudGrpc.labels.tier }}
+    component: {{.Release.Name}}-{{ .Values.service.gocloudGrpc.labels.component }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  ports:
+    - protocol: {{ .Values.service.gocloudGrpc.ports.protocol }}
+      port: {{ .Values.service.gocloudGrpc.ports.targetPort }}
+      targetPort: {{ .Values.service.gocloudGrpc.ports.targetPort }}

@@ -1,10 +1,11 @@
-package endpoints
+package restapi
 
 import (
 	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -13,9 +14,11 @@ import (
 )
 
 const (
-	addressDB   = "gocloud-grpc:8000"
-	defaultName = "World"
-	timeout     = 1
+	// TODO: must match k8s charts and template values
+	defaultServiceName = "gocloud-grpc"
+	defaultServicePort = "8000"
+	defaultName        = "World"
+	timeout            = 1
 )
 
 type RestAPI struct {
@@ -34,9 +37,27 @@ type HealthChecker interface {
 // resources for servicing hello world endpoint
 type HelloWorldEndpoint struct{}
 
+func getServiceAddress() string {
+	var svc, port string
+
+	if svc = os.Getenv("GRPC_HW_SERVICE_NAME"); svc == "" {
+		svc = defaultServiceName
+	}
+
+	if port = os.Getenv("GRPC_HW_SERVICE_PORT"); port == "" {
+		port = defaultServicePort
+	}
+
+	return fmt.Sprintf("%s:%s", svc, port)
+}
+
 func (api HelloWorldEndpoint) HelloWorld(names []string) (string, error) {
+	// construct grpc service address
+	serviceAddress := getServiceAddress()
+	log.Println("attempt dial gRPC service:", serviceAddress)
+
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(addressDB, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(timeout*time.Second))
+	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(timeout*time.Second))
 	if err != nil {
 		return "", fmt.Errorf("grpc: server unreachable, %s", err)
 	}
