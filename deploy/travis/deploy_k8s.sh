@@ -37,7 +37,7 @@ echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
 # create namespace all cases ignoring error
 sudo kubectl create namespace $NAMESPACE || true
 
-# upsert helm release
+# upstall helm release
 sudo helm upgrade \
 $DRYRUN_OPTION \
 --debug \

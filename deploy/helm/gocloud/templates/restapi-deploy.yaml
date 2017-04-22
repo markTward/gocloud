@@ -1,14 +1,13 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  # name: "{{ .Values.service.gocloudAPI.name }}"
   # name: {{ template "fullname" . }}-api
   name: {{ .Release.Name }}-api
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{.Release.Name}}-{{ .Values.service.gocloudAPI.labels.component }}"
+    chart: {{.Chart.Name}}-{{.Chart.Version}}
+    component: {{.Release.Name}}-{{ .Values.service.gocloudAPI.labels.component }}
 spec:
   replicas: {{ .Values.service.gocloudAPI.replicaCount }}
   template:
@@ -17,13 +16,18 @@ spec:
         app: {{ .Values.service.gocloudAPI.labels.app }}
         tier: {{ .Values.service.gocloudAPI.labels.tier }}
         component: {{.Release.Name}}-{{ .Values.service.gocloudAPI.labels.component }}
-        chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     spec:
       containers:
       - name: gocloud-fe
-        image: "{{ .Values.service.gocloudAPI.image.repository}}:{{.Values.service.gocloudAPI.image.tag }}"
-        imagePullPolicy: "{{ .Values.service.gocloudAPI.image.pullPolicy}}"
+        image: {{ .Values.service.gocloudAPI.image.repository}}:{{.Values.service.gocloudAPI.image.tag }}
+        imagePullPolicy: {{ .Values.service.gocloudAPI.image.pullPolicy}}
         ports:
         - containerPort: {{ .Values.service.gocloudAPI.ports.containerPort }}
           name: {{ .Values.service.gocloudAPI.ports.name }}
         command: {{ .Values.service.gocloudAPI.command }}
+        env:
+        - name: GRPC_HW_SERVICE_NAME
+          value: {{ .Release.Name }}-grpc
+        - name: GRPC_HW_SERVICE_PORT
+          value: "{{ .Values.service.gocloudGrpc.servicePort }}"
