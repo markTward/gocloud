@@ -21,6 +21,7 @@ before_install:
 - env | grep -v DOCKER | grep -v GOCLOUD | sort
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
 - mkdir -p $GOCLOUD_CICD_DIR
+# TODO: configure ability to clone commit or branch: git clone -b <branch> <remote_repo>
 - git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
 install:
 - go get -d -v ./...
