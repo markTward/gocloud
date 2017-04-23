@@ -22,8 +22,6 @@ echo "TRAVIS_EVENT_TYPE: $TRAVIS_EVENT_TYPE"
 # tag images
 docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:$DOCKER_COMMIT_TAG;
 
-# pull requests
-
 if [ "$TRAVIS_EVENT_TYPE" == "push" ]; then
   docker tag $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG $DOCKER_REPO:$TRAVIS_BRANCH;
   if [ "$TRAVIS_BRANCH" == "master" ]; then
@@ -40,8 +38,8 @@ docker images
 
 # push images
 if [ "$REPO_TARGET" == "gcr" ]; then
-  if [ "$TRAVIS_EVENT_TYPE" == "push" ]; then
     sudo gcloud docker -- push $DOCKER_REPO:$DOCKER_COMMIT_TAG
+  if [ "$TRAVIS_EVENT_TYPE" == "push" ]; then
     sudo gcloud docker -- push $DOCKER_REPO:$TRAVIS_BRANCH
     if [ "$TRAVIS_BRANCH" == "master" ]; then
       sudo gcloud docker -- push $DOCKER_REPO:latest
