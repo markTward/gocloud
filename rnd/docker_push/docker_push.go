@@ -15,7 +15,6 @@ type Config struct {
 	Workflow
 	Github
 	Registry map[string]map[string]Platform
-	Fruits   map[string][]string
 }
 
 // echo "DOCKER_REPO: $DOCKER_REPO"
@@ -54,7 +53,7 @@ func main() {
 	fmt.Printf("Config.Workflow ==> %#v\n", cfg.Workflow)
 	fmt.Printf("Config.Github ==> %#v\n", cfg.Github)
 	fmt.Printf("Config.Registry ==> %#v\n", cfg.Registry)
-	// fmt.Printf("Config.Fruits ==> %#v\n", cfg.Fruits)
+	fmt.Printf("Config.Registry ==> %v\n", cfg.Registry)
 	// debugYAML(yamlInput, cfg)
 }
 
