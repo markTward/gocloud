@@ -1,0 +1,42 @@
+app:
+  name: gocloud
+
+github:
+  repo: markTward/gocloud
+
+fruits:
+  apple:
+    - red
+    - sweet
+  lemon:
+    - yellow
+    - sour
+
+registry:
+  provider:
+    gcr:
+      url: gcr.io
+      project: k8sdemo-159622
+      repo: gocloud
+    docker:
+      url: docker.io
+      project: markTward
+      repo: gocloud
+
+workflow:
+  enabled: true
+  github:
+    repo: markTward/gocloud-cicd
+    branch: master
+  ciprovider:
+    name: travis
+    plan: A
+  platform:
+    name: gke
+    project: k8sdemo-159622
+    cluster: k0
+  cdprovider:
+    name: helm
+    release: gocloud
+    namespace: gocloud
+    chartDir: deploy/travis/gocloud
