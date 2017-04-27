@@ -39,21 +39,17 @@ func main() {
 	pz2 = append(pz2, p11, p22)
 	fmt.Printf("%#v\n", pz2)
 
-	// var gcr GCRPlatform
-	// var dkr DockerPlatform
 	for i, v := range pz2 {
 		fmt.Printf("%v:  %#v (%T)\n", i, v, v)
-		r := reflect.TypeOf(v)
-		fmt.Printf("Platform Type: %v\n", r)
 
-		x, ok := v.(GCRPlatform)
-		fmt.Println(x, ok)
-		// temp, err := twoRet()
-		//  str2 := temp.(string)
-		//
-		// if v == (GCRPlatform) {
-		// 	fmt.Println("is GCR!!!")
-		// }
+		switch r := reflect.TypeOf(v).String(); r {
+		case "main.GCRPlatform":
+			fmt.Println("GCR")
+		case "main.DockerPlatform":
+			fmt.Println("Docker")
+		default:
+			fmt.Println("Unknown")
+		}
 
 	}
 
