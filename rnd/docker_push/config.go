@@ -6,7 +6,9 @@ type App struct {
 type Github struct {
 	Repo string
 }
-type Platform struct {
+
+type Registry struct {
+	Name    string
 	Host    string
 	Project string
 	Account string

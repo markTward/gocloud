@@ -11,18 +11,8 @@ import (
 )
 
 type Config struct {
-	App
-	Workflow
-	Github
-	Registry map[string]Platform
+	Registry
 }
-
-// echo "DOCKER_REPO: $DOCKER_REPO"
-// echo "REPO_TARGET: $REPO_TARGET"
-// echo "DOCKER_COMMIT_TAG: $DOCKER_COMMIT_TAG"
-// echo "BRANCH_REGEX: $BRANCH_REGEX"
-// echo "TRAVIS_BRANCH: $TRAVIS_BRANCH"
-// echo "TRAVIS_EVENT_TYPE: $TRAVIS_EVENT_TYPE"
 
 const (
 	defaultConfigFile = "cicd.yaml"
@@ -47,37 +37,17 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	// fmt.Printf("Config.App ==> %#v\n", cfg.App)
-	// fmt.Printf("Config.Workflow ==> %#v\n", cfg.Workflow)
-	// fmt.Printf("Config.Github ==> %#v\n", cfg.Github)
+	fmt.Printf("Config.Registry ==> %v\n", cfg.Registry)
 
-	for provider, definition := range cfg.Registry {
-		fmt.Println(provider, definition)
-		switch provider {
-		case "gcr":
-			fmt.Println("Is GCR!!!", provider, definition)
-		case "docker":
-			fmt.Println("Is DOCKER!!!", provider, definition)
-		default:
-			fmt.Println("unknown Registry :-()")
-		}
+	switch cfg.Registry.Name {
+	case "gcr":
+		fmt.Println("pushing to GCR!!!", cfg.Registry)
+	case "docker":
+		fmt.Println("pushing to DOCKER!!!", cfg.Registry)
+	default:
+		fmt.Println("unknown Registry :-()")
 	}
-	// var provider map[string]
-	// switch cfg.Registry["provider"]; provider {
-	// case "gcr":
-	// 	fmt.Println("Is GCR!!!", provider)
-	// case "docker":
-	// 	fmt.Println("Is DOCKER!!!", provider)
-	// default:
-	// 	fmt.Println("unknown Registry :-()")
-	// }
 
-	fmt.Printf("Config.Registry ==> %#v\n", cfg.Registry)
-	gcr := cfg.Registry["provider"]["gcr"]
-	fmt.Printf("Registry: %#v // %T\n", gcr, gcr)
-	url := fmt.Sprintf("%v/%v/%v", gcr.Host, gcr.Project, gcr.Repo)
-	fmt.Println(url)
-	// fmt.Printf("Config.Registry ==> %v\n", cfg.Registry)
 	// debugYAML(yamlInput, cfg)
 }
 

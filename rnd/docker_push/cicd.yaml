@@ -5,15 +5,14 @@ github:
   repo: markTward/gocloud
 
 registry:
-  provider:
-    gcr:
-      host: gcr.io
-      project: k8sdemo-159622
-      repo: gocloud
-    docker:
-      host: docker.io
-      account: markTward
-      repo: gocloud
+    name: gcr
+    host: gcr.io
+    project: k8sdemo-159622
+    repo: gocloud
+    # name: docker
+    # url: docker.io
+    # account: markTward
+    # repo: gocloud
 
 workflow:
   enabled: true
