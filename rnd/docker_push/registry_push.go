@@ -9,72 +9,76 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
 type Config struct {
+	Workflow
 	Registry
 }
 
 const (
-	defaultConfigFile  = "cicd.yaml"
-	defaultRegistryURL = ""
-	configFileUsage    = "configuration file containing project workflow values"
-	registryURLUsage   = "provide a valid registry URL (docker and gcr currenly supported)"
+	defaultConfigFile = "cicd.yaml"
+	configFileUsage   = "configuration file containing project workflow values"
 )
 
 var configFile string
-var registryURL string
 
 func init() {
 
 	flag.StringVar(&configFile, "config", defaultConfigFile, configFileUsage)
 	flag.StringVar(&configFile, "c", defaultConfigFile, configFileUsage)
 
-	flag.StringVar(&registryURL, "url", defaultRegistryURL, registryURLUsage)
-	flag.StringVar(&registryURL, "u", defaultRegistryURL, registryURLUsage)
+}
+
+func tag(r Registrator, tag string) (string, error) {
+	return r.Tag(tag)
+}
+
+func push(r Registrator) (string, error) {
+	return r.Push()
 }
 
 func main() {
 
 	flag.Parse()
 
+	// read in project config file
 	yamlInput, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
+	// parse yaml into Config object
 	cfg := Config{}
-
 	err = yaml.Unmarshal([]byte(yamlInput), &cfg)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
 
-	if registryURL != "" {
-		if !(strings.HasPrefix(registryURL, "gcr.io") || strings.HasPrefix(registryURL, "docker.io")) {
-			fmt.Fprintf(os.Stderr, "error: unsupported registry: %v\n", strings.Split(registryURL, "/")[0])
-			os.Exit(1)
-		}
-	} else {
-		switch cfg.Registry.Name {
-		case "gcr":
-			registryURL = fmt.Sprintf("%v/%v/%v", cfg.Registry.Host, cfg.Registry.Project, cfg.Registry.Repo)
-			// TODO: os.exec gcr_push.sh
-		case "docker":
-			registryURL = fmt.Sprintf("%v/%v/%v", cfg.Registry.Host, cfg.Registry.Account, cfg.Registry.Repo)
-			// TODL: os.exec docker_push.sh
-		default:
-			fmt.Fprintf(os.Stderr, "error: unsupported registry: %v\n", cfg.Registry.Name)
-			os.Exit(1)
-		}
-	}
-	fmt.Println("Registry URL:", registryURL)
+	// point to active registry (docker, gcr, ...)
+	var activeRegistry interface{}
 
-	// debugYAML(yamlInput, cfg)
+	switch cfg.Workflow.Registry {
+	case "gcr":
+		activeRegistry = &cfg.Registry.GCRRegistry
+	case "docker":
+		activeRegistry = &cfg.Registry.DockerRegistry
+	default:
+		fmt.Fprintf(os.Stderr, "error: unsupported registry: %v\n", cfg.Workflow.Registry)
+		os.Exit(1)
+	}
+
+	// tag and push images
+	var result string
+	result, err = tag(activeRegistry.(Registrator), "master")
+	fmt.Println("Tag Result:", result)
+
+	result, err = push(activeRegistry.(Registrator))
+	fmt.Println("Push Result:", result)
+
 }
 
 func debugYAML(yamlInput []byte, cfg Config) {
