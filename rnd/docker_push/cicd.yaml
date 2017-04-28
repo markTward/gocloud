@@ -4,23 +4,15 @@ app:
 github:
   repo: markTward/gocloud
 
-fruits:
-  apple:
-    - red
-    - sweet
-  lemon:
-    - yellow
-    - sour
-
 registry:
   provider:
     gcr:
-      url: gcr.io
+      host: gcr.io
       project: k8sdemo-159622
       repo: gocloud
     docker:
-      url: docker.io
-      project: markTward
+      host: docker.io
+      account: markTward
       repo: gocloud
 
 workflow:

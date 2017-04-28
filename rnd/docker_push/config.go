@@ -6,14 +6,10 @@ type App struct {
 type Github struct {
 	Repo string
 }
-
-// type Registry struct {
-// 	Provider map[string][]string
-// }
-//
 type Platform struct {
-	Url     string
+	Host    string
 	Project string
+	Account string
 	Repo    string
 }
 
