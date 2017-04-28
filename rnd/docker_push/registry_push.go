@@ -18,18 +18,15 @@ type Config struct {
 	Registry
 }
 
-const (
-	defaultConfigFile = "cicd.yaml"
-	configFileUsage   = "configuration file containing project workflow values"
-)
-
 var configFile string
 
 func init() {
-
+	const (
+		defaultConfigFile = "cicd.yaml"
+		configFileUsage   = "configuration file containing project workflow values"
+	)
 	flag.StringVar(&configFile, "config", defaultConfigFile, configFileUsage)
 	flag.StringVar(&configFile, "c", defaultConfigFile, configFileUsage)
-
 }
 
 func tag(r Registrator, tag string) (string, error) {
@@ -38,6 +35,10 @@ func tag(r Registrator, tag string) (string, error) {
 
 func push(r Registrator) (string, error) {
 	return r.Push()
+}
+
+func isValid(r Registrator) bool {
+	return r.IsValid()
 }
 
 func main() {
@@ -71,12 +72,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	// tag and push images
+	// assert type Registrator
+	ar := activeRegistry.(Registrator)
+
+	// validate registry has required values
+	if ok := isValid(ar); !ok {
+		fmt.Fprintf(os.Stderr, "error: missing registry url from configuration: %#v\n", ar)
+		os.Exit(1)
+	}
+
+	// tag images
 	var result string
-	result, err = tag(activeRegistry.(Registrator), "master")
+	result, err = tag(ar, "master")
 	fmt.Println("Tag Result:", result)
 
-	result, err = push(activeRegistry.(Registrator))
+	// push images
+	result, err = push(ar.(Registrator))
 	fmt.Println("Push Result:", result)
 
 }
