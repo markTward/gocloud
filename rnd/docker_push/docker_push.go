@@ -14,7 +14,7 @@ type Config struct {
 	App
 	Workflow
 	Github
-	Registry map[string]map[string]Platform
+	Registry map[string]Platform
 }
 
 // echo "DOCKER_REPO: $DOCKER_REPO"
@@ -51,7 +51,7 @@ func main() {
 	// fmt.Printf("Config.Workflow ==> %#v\n", cfg.Workflow)
 	// fmt.Printf("Config.Github ==> %#v\n", cfg.Github)
 
-	for provider, definition := range cfg.Registry["provider"] {
+	for provider, definition := range cfg.Registry {
 		fmt.Println(provider, definition)
 		switch provider {
 		case "gcr":
