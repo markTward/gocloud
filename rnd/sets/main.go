@@ -22,10 +22,7 @@ type Docker struct {
 }
 
 type Config struct {
-	// Registry map[string]map[string]Platform
-	// Registry map[string][]Platform
 	Registry map[string][]interface{}
-	// Registry map[string]map[string]interface{}
 }
 
 type Platform struct {
@@ -62,8 +59,8 @@ registry:
 
 	for k1, v1 := range provider {
 		fmt.Printf("k1:%#v :: v1:%#v // %T :: %T\n", k1, v1, k1, v1)
-		m := make(map[interface{}]interface{})
-		m = v1.(map[interface{}]interface{})
+		// m := make(map[interface{}]interface{})
+		m := v1.(map[interface{}]interface{})
 		fmt.Printf("m post assert: %#v // %T\n", m, m)
 
 		var gcrpoint interface{}
@@ -83,4 +80,5 @@ registry:
 
 		fmt.Printf("new map: %#v (%T)\n", m2, m2)
 		fmt.Println()
+	}
 }
