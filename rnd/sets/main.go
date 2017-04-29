@@ -37,64 +37,9 @@ type Platform struct {
 
 func main() {
 
-	// p11 := GCRPlatform{
-	// 	Url:     "grc.io",
-	// 	Project: "k8sdemo-159622",
-	// 	Repo:    "gocloud",
-	// 	Name:    "gcr",
-	// }
-	//
-	// p22 := DockerPlatform{
-	// 	Name:    "docker",
-	// 	Url:     "docker.io",
-	// 	Account: "markTward",
-	// 	Repo:    "gocloud",
-	// }
-	//
-	// var pz2 []interface{}
-	// pz2 = append(pz2, p11, p22)
-	// fmt.Printf("%#v\n", pz2)
-	//
-	// for i, v := range pz2 {
-	// 	fmt.Printf("%v:  %#v (%T)\n", i, v, v)
-	//
-	// 	switch r := reflect.TypeOf(v).String(); r {
-	// 	case "main.GCRPlatform":
-	// 		fmt.Println("GCR")
-	// 	case "main.DockerPlatform":
-	// 		fmt.Println("Docker")
-	// 	default:
-	// 		fmt.Println("Unknown")
-	// 	}
-	//
-	// }
-
-	// 	var yamlInput1 = `
-	//   registry:
-	//     provider:
-	//       gcrplatform:
-	//         name: gcr
-	//         url: gcr.io
-	//         project: k8sdemo-159622
-	//         repo: gocloud
-	//       dockerplatform:
-	//         name: docker
-	//         url: docker.io
-	//         project: markTward
-	//         repo: gocloud
-	// `
-
-	// - name: docker
-	// 	url: docker.io
-	// 	account: marktward
-	// 	repo: gocloud
-
 	var yamlInput2 = `
 registry:
   provider:
-    - a: b
-      c: d
-      e: f
     - name: gcr
       url: gcr.io
       project: k8sdemo-159622
@@ -104,21 +49,6 @@ registry:
       account: marktward
       repo: gocloud
 `
-
-	// var yamlInput3 = `
-	// registry:
-	//   provider:
-	//     gcr:
-	//       name: gcr
-	//       url: gcr.io
-	//       project: k8sdemo-159622
-	//       repo: gocloud
-	//     docker:
-	//       name: docker
-	//       url: docker.io
-	//       account: markTward
-	//       repo: gocloud
-	// `
 	cfg := Config{}
 
 	err := yaml.Unmarshal([]byte(yamlInput2), &cfg)
@@ -153,27 +83,4 @@ registry:
 
 		fmt.Printf("new map: %#v (%T)\n", m2, m2)
 		fmt.Println()
-
-		// if gcr, ok := m.(GCR); ok {
-		// 	fmt.Printf("post GCR assert: %#v // %v", gcr, ok)
-		// }
-	}
-
-	// r1, ok := cfg.Registry["provider"].(map[string]interface{})
-	// activeRegistry := make(map[interface{}]interface{})
-	// target := make(map[string]string)
-
-	// for key, value := range cfg.Registry["provider"] {
-	// 	fmt.Printf("%#v :: %#v\n", key, value)
-	// for k2, v2 := range value {
-	// 	fmt.Printf("%#v :: %#v\n", k2, v2)
-	// }
-	// }
-	// r1 = cfg.Registry["provider"].(map[interface{}]interface{})
-
-	// if ok {
-	// 	fmt.Println("R1 OK:", r1)
-	// } else {
-	// 	fmt.Println("r1 NOT ok:")
-	// }
 }
