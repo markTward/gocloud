@@ -24,8 +24,8 @@ type Docker struct {
 type Config struct {
 	// Registry map[string]map[string]Platform
 	// Registry map[string][]Platform
-	// Registry map[string][]interface{}
-	Registry map[string]map[string]interface{}
+	Registry map[string][]interface{}
+	// Registry map[string]map[string]interface{}
 }
 
 type Platform struct {
@@ -83,35 +83,45 @@ func main() {
 	//         project: markTward
 	//         repo: gocloud
 	// `
-	// 	var yamlInput2 = `
+
+	// - name: docker
+	// 	url: docker.io
+	// 	account: marktward
+	// 	repo: gocloud
+
+	var yamlInput2 = `
+registry:
+  provider:
+    - a: b
+      c: d
+      e: f
+    - name: gcr
+      url: gcr.io
+      project: k8sdemo-159622
+      repo: gocloud
+    - name: docker
+      url: docker.io
+      account: marktward
+      repo: gocloud
+`
+
+	// var yamlInput3 = `
 	// registry:
 	//   provider:
-	//     - name: gcr
+	//     gcr:
+	//       name: gcr
 	//       url: gcr.io
 	//       project: k8sdemo-159622
 	//       repo: gocloud
-	//     - name: docker
+	//     docker:
+	//       name: docker
 	//       url: docker.io
-	//       account: marktward
+	//       account: markTward
 	//       repo: gocloud
-
-	var yamlInput3 = `
-  registry:
-    provider:
-      gcr:
-        name: gcr
-        url: gcr.io
-        project: k8sdemo-159622
-        repo: gocloud
-      docker:
-        name: docker
-        url: docker.io
-        account: markTward
-        repo: gocloud
-  `
+	// `
 	cfg := Config{}
 
-	err := yaml.Unmarshal([]byte(yamlInput3), &cfg)
+	err := yaml.Unmarshal([]byte(yamlInput2), &cfg)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
@@ -120,11 +130,50 @@ func main() {
 	provider := cfg.Registry["provider"]
 	fmt.Printf("\n\n%#v :: %T\n", provider, provider)
 
-	r1, ok := cfg.Registry["provider"].(map[string]interface{})
-	// r1, ok := cfg.Registry["provider"]["gcr"].(map[interface{}]interface{})
-	if ok {
-		fmt.Println("R1 OK:", r1)
-	} else {
-		fmt.Println("r1 NOT ok:")
+	for k1, v1 := range provider {
+		fmt.Printf("k1:%#v :: v1:%#v // %T :: %T\n", k1, v1, k1, v1)
+		m := make(map[interface{}]interface{})
+		m = v1.(map[interface{}]interface{})
+		fmt.Printf("m post assert: %#v // %T\n", m, m)
+
+		var gcrpoint interface{}
+		gcrpoint = &m
+		gcrassert, ok := gcrpoint.(GCR)
+		fmt.Println("GCR assert ==>", gcrpoint, gcrassert, ok)
+
+		m2 := make(map[string]string)
+		m2["test"] = "ing"
+		for k2, v2 := range m {
+			// m2[k2] = v2
+			key := k2.(string)
+			value := v2.(string)
+			m2[key] = value
+			fmt.Printf("map k2 ==> %#v (%T) :: %#v (%T)\n", k2, k2, v2, v2)
+		}
+
+		fmt.Printf("new map: %#v (%T)\n", m2, m2)
+		fmt.Println()
+
+		// if gcr, ok := m.(GCR); ok {
+		// 	fmt.Printf("post GCR assert: %#v // %v", gcr, ok)
+		// }
 	}
+
+	// r1, ok := cfg.Registry["provider"].(map[string]interface{})
+	// activeRegistry := make(map[interface{}]interface{})
+	// target := make(map[string]string)
+
+	// for key, value := range cfg.Registry["provider"] {
+	// 	fmt.Printf("%#v :: %#v\n", key, value)
+	// for k2, v2 := range value {
+	// 	fmt.Printf("%#v :: %#v\n", k2, v2)
+	// }
+	// }
+	// r1 = cfg.Registry["provider"].(map[interface{}]interface{})
+
+	// if ok {
+	// 	fmt.Println("R1 OK:", r1)
+	// } else {
+	// 	fmt.Println("r1 NOT ok:")
+	// }
 }
