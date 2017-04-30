@@ -63,6 +63,11 @@ registry:
 		m := v1.(map[interface{}]interface{})
 		fmt.Printf("m post assert: %#v // %T\n", m, m)
 
+		// this fails; need to specifically fill a struct, but doing so means prior knowledge of which struct to fill
+		// can't be 'guessed' dynamically (make sense)
+		// to fill a struct from a map:
+		// http://stackoverflow.com/questions/26744873/converting-map-to-struct
+		// http://play.golang.org/p/tN8mxT_V9h
 		var gcrpoint interface{}
 		gcrpoint = &m
 		gcrassert, ok := gcrpoint.(GCR)
