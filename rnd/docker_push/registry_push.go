@@ -18,27 +18,30 @@ type Config struct {
 	Registry
 }
 
-var configFile string
+var configFile, buildTag, eventType *string
 
 func init() {
 	const (
 		defaultConfigFile = "cicd.yaml"
-		configFileUsage   = "configuration file containing project workflow values"
+		configFileUsage   = "configuration file containing project workflow values (default: cicd.yaml)"
+		buildTagUsage     = "existing image tag used as basis for further tags (required)"
+		eventTypeUsage    = "build event type from list: push, pull_request"
 	)
-	flag.StringVar(&configFile, "config", defaultConfigFile, configFileUsage)
-	flag.StringVar(&configFile, "c", defaultConfigFile, configFileUsage)
+	configFile = flag.String("config", defaultConfigFile, configFileUsage)
+	buildTag = flag.String("tag", "", buildTagUsage)
+	eventType = flag.String("eventType", "push", eventTypeUsage)
 }
 
-func tag(r Registrator, tag string) (string, error) {
-	return r.Tag(tag)
+func tag(r Registrator, tag string, event string) ([]string, error) {
+	return r.Tag(tag, event)
 }
 
 func push(r Registrator) (string, error) {
 	return r.Push()
 }
 
-func isValid(r Registrator) bool {
-	return r.IsValid()
+func isRegistryValid(r Registrator) bool {
+	return r.IsRegistryValid()
 }
 
 func main() {
@@ -46,7 +49,7 @@ func main() {
 	flag.Parse()
 
 	// read in project config file
-	yamlInput, err := ioutil.ReadFile(configFile)
+	yamlInput, err := ioutil.ReadFile(*configFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -76,18 +79,23 @@ func main() {
 	ar := activeRegistry.(Registrator)
 
 	// validate registry has required values
-	if ok := isValid(ar); !ok {
+	if ok := isRegistryValid(ar); !ok {
 		fmt.Fprintf(os.Stderr, "error: missing registry url from configuration: %#v\n", ar)
 		os.Exit(1)
 	}
 
 	// tag images
-	var result string
-	result, err = tag(ar, "master")
-	fmt.Println("Tag Result:", result)
+	if *buildTag == "" {
+		fmt.Fprintf(os.Stderr, "error: build tag a required value; use --tag option\n")
+		os.Exit(1)
+	}
+
+	var images []string
+	images, _ = tag(ar, *buildTag, *eventType)
+	fmt.Println("Tag Result:", images)
 
 	// push images
-	result, err = push(ar.(Registrator))
+	result, err := push(ar.(Registrator))
 	fmt.Println("Push Result:", result)
 
 }

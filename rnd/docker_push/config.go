@@ -15,9 +15,9 @@ type Registry struct {
 }
 
 type Registrator interface {
-	Tag(string) (string, error)
+	Tag(string, string) ([]string, error)
 	Push() (string, error)
-	IsValid() bool
+	IsRegistryValid() bool
 }
 
 type GCRRegistry struct {
@@ -28,24 +28,30 @@ type GCRRegistry struct {
 	Url     string
 }
 
-func (r *GCRRegistry) IsValid() bool {
+func (r *GCRRegistry) IsRegistryValid() bool {
 	return r.Url != ""
 }
 
-func (r *DockerRegistry) IsValid() bool {
+func (r *DockerRegistry) IsRegistryValid() bool {
 	return r.Url != ""
 }
 
-func (gcr *GCRRegistry) Tag(tag string) (string, error) {
-	return fmt.Sprintf("GCR Tagging with: %v\n", tag), nil
+func (gcr *GCRRegistry) Tag(tag string, event string) ([]string, error) {
+	var images []string
+	image := gcr.Url + ":" + tag
+	images = append(images, image)
+	return images, nil
 }
 
 func (gcr *GCRRegistry) Push() (string, error) {
 	return fmt.Sprintf("gcloud docker --push: %v\n", gcr.Url), nil
 }
 
-func (docker *DockerRegistry) Tag(tag string) (string, error) {
-	return fmt.Sprintf("Docker Tagging with: %v\n", tag), nil
+func (docker *DockerRegistry) Tag(tag string, event string) ([]string, error) {
+	var images []string
+	image := docker.Url + ":" + tag
+	images = append(images, image)
+	return images, nil
 }
 
 func (docker *DockerRegistry) Push() (string, error) {
