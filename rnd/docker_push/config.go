@@ -41,16 +41,16 @@ type DockerRegistry struct {
 }
 
 func (r *GCRRegistry) Authenticate() (err error) {
-	var stderr bytes.Buffer
 
-	basecmd := "gcloud"
-	args := []string{"auth", "activate-service-account", "--key-file", "client-secret.json"}
-	cmd := exec.Command(basecmd, args...)
+	var stderr bytes.Buffer
+	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", "client-secret.json")
 	cmd.Stderr = &stderr
+
 	if err = cmd.Run(); err != nil {
-		err = fmt.Errorf("%v\n", stderr.String())
+		err = fmt.Errorf("%v", stderr.String())
 	}
 	return err
+
 }
 
 func (r *DockerRegistry) Authenticate() (err error) {
@@ -68,7 +68,7 @@ func (r *DockerRegistry) IsRegistryValid() bool {
 func (gcr *GCRRegistry) Push(images []string) (msg string, err error) {
 	if err = gcr.Authenticate(); err == nil {
 		// TODO: real push!
-		msg = fmt.Sprintf("gcloud docker --push %v\n", images)
+		msg = fmt.Sprintf("gcloud docker --push %v", images)
 	}
 	return msg, err
 }

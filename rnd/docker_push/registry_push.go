@@ -16,7 +16,7 @@ type Config struct {
 	Registry
 }
 
-var configFile, buildTag, eventType, branch *string
+var configFile, buildTag, event, branch *string
 var pr *int
 
 func init() {
@@ -24,23 +24,27 @@ func init() {
 		defaultConfigFile = "cicd.yaml"
 		configFileUsage   = "configuration file containing project workflow values (default: cicd.yaml)"
 		buildTagUsage     = "existing image tag used as basis for further tags (required)"
-		eventTypeUsage    = "build event type from list: push, pull_request (default push)"
+		eventUsage        = "build event type from list: push, pull_request (default push)"
 		branchTypeUsage   = "build branch (required)"
 		prUsage           = "pull request number (required when event type is pr)"
 	)
 	configFile = flag.String("config", defaultConfigFile, configFileUsage)
 	buildTag = flag.String("tag", "", buildTagUsage)
-	eventType = flag.String("eventType", "push", eventTypeUsage)
+	event = flag.String("event", "push", eventUsage)
 	branch = flag.String("branch", "", branchTypeUsage)
 	pr = flag.Int("pr", 0, prUsage)
 }
 
 func tag(url string, tag string, event string, branch string, pr int) ([]string, error) {
+
+	// build tag images
 	var images []string
-	// build tag image
+
+	// always tag image using git commit
 	image := url + ":" + tag
 	images = append(images, image)
 
+	// tag additional images based on build event type
 	switch event {
 	case "push":
 		images = append(images, url+":"+branch)
@@ -62,9 +66,35 @@ func isRegistryValid(r Registrator) bool {
 	return r.IsRegistryValid()
 }
 
+func validateCLInput() (err error) {
+	if *buildTag == "" {
+		err = fmt.Errorf("%v\n", "error: build tag a required value; use --tag option")
+	}
+
+	if *branch == "" {
+		err = fmt.Errorf("%v\n", "error: build branch a required value; use --branch option")
+	}
+
+	switch *event {
+	case "push", "pull_request":
+	default:
+		err = fmt.Errorf("%v\n", "error: event type must be one of: push, pull_request")
+	}
+
+	if *event == "pull_request" && *pr == 0 {
+		err = fmt.Errorf("%v\n", "error: event type pull_request requires a PR number; use --pr option")
+	}
+	return err
+}
+
 func main() {
 
+	// parse and validate CLI
 	flag.Parse()
+	if err := validateCLInput(); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v", err)
+		os.Exit(1)
+	}
 
 	// read in project config file
 	yamlInput, err := ioutil.ReadFile(*configFile)
@@ -81,20 +111,6 @@ func main() {
 	}
 
 	// validate cli flags
-	if *buildTag == "" {
-		fmt.Fprintf(os.Stderr, "error: build tag a required value; use --tag option\n")
-		os.Exit(1)
-	}
-
-	if *branch == "" {
-		fmt.Fprintf(os.Stderr, "error: build branch a required value; use --branch option\n")
-		os.Exit(1)
-	}
-
-	if *eventType == "pull_request" && *pr == 0 {
-		fmt.Fprintf(os.Stderr, "error: event type pull_request requires a PR number; use --pr option\n")
-		os.Exit(1)
-	}
 
 	// point to active registry (docker, gcr, ...)
 	var activeRegistry interface{}
@@ -122,7 +138,7 @@ func main() {
 	}
 
 	var images []string
-	images, _ = tag(url, *buildTag, *eventType, *branch, *pr)
+	images, _ = tag(url, *buildTag, *event, *branch, *pr)
 	fmt.Println("Tag Result:", images)
 
 	// push images
@@ -132,7 +148,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Push Result:", result)
+	fmt.Printf("Push Result: %v\n", result)
 
 }
 
