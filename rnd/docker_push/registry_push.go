@@ -54,8 +54,8 @@ func tag(url string, tag string, event string, branch string, pr int) ([]string,
 	return images, nil
 }
 
-func push(r Registrator) (string, error) {
-	return r.Push()
+func push(r Registrator, images []string) (string, error) {
+	return r.Push(images)
 }
 
 func isRegistryValid(r Registrator) bool {
@@ -127,7 +127,7 @@ func main() {
 
 	// push images
 	var result string
-	if result, err = push(ar.(Registrator)); err != nil {
+	if result, err = push(ar.(Registrator), images); err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)
 	}

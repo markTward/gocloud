@@ -20,7 +20,7 @@ type Registry struct {
 
 type Registrator interface {
 	IsRegistryValid() bool
-	Push() (string, error)
+	Push([]string) (string, error)
 	Authenticate() error
 }
 
@@ -44,7 +44,7 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	var stderr bytes.Buffer
 
 	basecmd := "gcloud"
-	args := []string{"auth", "activate-service-account", "--key-file", "client-secret.jsonXXX"}
+	args := []string{"auth", "activate-service-account", "--key-file", "client-secret.json"}
 	cmd := exec.Command(basecmd, args...)
 	cmd.Stderr = &stderr
 	if err = cmd.Run(); err != nil {
@@ -53,8 +53,8 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	return err
 }
 
-func (r *DockerRegistry) Authenticate() bool {
-	return true
+func (r *DockerRegistry) Authenticate() (err error) {
+	return err
 }
 
 func (r *GCRRegistry) IsRegistryValid() bool {
@@ -65,16 +65,20 @@ func (r *DockerRegistry) IsRegistryValid() bool {
 	return r.Url != ""
 }
 
-func (gcr *GCRRegistry) Push() (msg string, err error) {
+func (gcr *GCRRegistry) Push(images []string) (msg string, err error) {
 	if err = gcr.Authenticate(); err == nil {
 		// TODO: real push!
-		msg = fmt.Sprintf("gcloud docker --push: %v\n", gcr.Url)
+		msg = fmt.Sprintf("gcloud docker --push %v\n", images)
 	}
 	return msg, err
 }
 
-func (docker *DockerRegistry) Push() (string, error) {
-	return fmt.Sprintf("docker push %v\n", docker.Url), nil
+func (docker *DockerRegistry) Push(images []string) (msg string, err error) {
+	if err = docker.Authenticate(); err == nil {
+		// TODO: real push!
+		msg = fmt.Sprintf("docker push %v\n", images)
+	}
+	return msg, err
 }
 
 type Workflow struct {
