@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os/exec"
 )
 
@@ -20,7 +21,7 @@ type Registry struct {
 
 type Registrator interface {
 	IsRegistryValid() error
-	Push([]string) (string, error)
+	Push([]string) ([]string, error)
 	Authenticate() error
 }
 
@@ -31,25 +32,41 @@ type GCRRegistry struct {
 	Project     string
 	Repo        string
 	Url         string
+	KeyFile     string
 }
 
 func (r *GCRRegistry) Authenticate() (err error) {
 
 	var stderr bytes.Buffer
-	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", "client-secret.json")
+	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", r.KeyFile)
 	cmd.Stderr = &stderr
-
+	log.Printf("attempt gcr authenication\n")
 	if err = cmd.Run(); err != nil {
 		err = fmt.Errorf("%v", stderr.String())
 	}
+
+	log.Printf("gcr authenication successful\n")
 	return err
 
 }
 
-func (gcr *GCRRegistry) Push(images []string) (msg string, err error) {
-	// TODO: real push!
-	msg = fmt.Sprintf("gcloud docker --push %v", images)
-	return msg, err
+func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
+	var stderr bytes.Buffer
+	// IDEA: could use single command to push all repo images: gcloud docker -- push gcr.io/k8sdemo-159622/gocloud
+	// but assumes that process ALWAYS wants ALL tags for repo to be pushed.  good for isolated build env, but ...
+	for _, image := range images {
+		log.Println("attempt push to gcr: ", image)
+		cmd := exec.Command("gcloud", "docker", "--", "push", image)
+		cmd.Stderr = &stderr
+
+		if err = cmd.Run(); err != nil {
+			// log.Printf("DEBUG: %v: %v", image, stderr.String())
+			err = fmt.Errorf("%v: %v", image, stderr.String())
+			break
+		}
+		pushed = append(pushed, image)
+	}
+	return pushed, err
 }
 
 func (r *GCRRegistry) IsRegistryValid() (err error) {
@@ -79,12 +96,12 @@ func (r *DockerRegistry) IsRegistryValid() (err error) {
 	return err
 }
 
-func (docker *DockerRegistry) Push(images []string) (msg string, err error) {
+func (docker *DockerRegistry) Push(images []string) (pushed []string, err error) {
 	if err = docker.Authenticate(); err == nil {
 		// TODO: real push!
-		msg = fmt.Sprintf("docker push %v\n", images)
+		pushed = images
 	}
-	return msg, err
+	return pushed, err
 }
 
 type Workflow struct {

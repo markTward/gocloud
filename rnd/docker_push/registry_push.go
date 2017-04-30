@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
 
 	yaml "gopkg.in/yaml.v2"
@@ -35,14 +37,27 @@ func init() {
 	pr = flag.Int("pr", 0, prUsage)
 }
 
-func tag(url string, tag string, event string, branch string, pr int) ([]string, error) {
+func tagImages(src string, targets []string) (err error) {
+	var stderr bytes.Buffer
 
-	// build tag images
-	var images []string
+	for _, target := range targets {
+		cmd := exec.Command("docker", "tag", src, target)
+		cmd.Stderr = &stderr
+		log.Printf("attempt docker tag from %v to %v", src, target)
 
-	// always tag image using git commit
+		if err = cmd.Run(); err != nil {
+			err = fmt.Errorf("%v", stderr.String())
+			break
+		}
+	}
+
+	return err
+}
+
+func tag(url string, tag string, event string, branch string, pr int) (images []string, err error) {
+
+	// source tag image using docker build git commit tag
 	image := url + ":" + tag
-	images = append(images, image)
 
 	// tag additional images based on build event type
 	switch event {
@@ -55,10 +70,15 @@ func tag(url string, tag string, event string, branch string, pr int) ([]string,
 		images = append(images, url+":PR-"+strconv.Itoa(pr))
 	}
 
-	return images, nil
+	// tag additional target images
+	if err = tagImages(image, images); err == nil {
+		// add source image to list
+		images = append(images, image)
+	}
+	return images, err
 }
 
-func push(r Registrator, images []string) (string, error) {
+func push(r Registrator, images []string) ([]string, error) {
 	return r.Push(images)
 }
 
@@ -141,18 +161,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	// tag images
 	var images []string
-	images, _ = tag(url, *buildTag, *event, *branch, *pr)
-	fmt.Println("Tag Result:", images)
-
-	// push images
-	var result string
-	if result, err = push(ar.(Registrator), images); err != nil {
+	if images, err = tag(url, *buildTag, *event, *branch, *pr); err != nil {
 		fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)
 	}
+	log.Println("tagged images:", images)
 
-	fmt.Printf("Push Result: %v\n", result)
+	// push images
+	var result []string
+	if result, err = push(ar, images); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(1)
+	}
+	log.Println("pushed images:", result)
 
 }
 

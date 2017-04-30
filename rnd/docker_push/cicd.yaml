@@ -11,7 +11,9 @@ registry:
     host: gcr.io
     project: k8sdemo-159622
     repo: gocloud
-    url: gcr.io/k8sdemo-159622/gocloud
+    url: gcr.io/k8sdemo-159622/busybox
+    # url: gcr.io/k8sdemo-159622/gocloud
+    keyfile: ./client-secret.json
   dockerregistry:
     name: docker
     description: Docker Hub
@@ -32,7 +34,7 @@ workflow:
     name: gke
     project: k8sdemo-159622
     cluster: k0
-  registry: docker
+  registry: gcr
   cdprovider:
     name: helm
     release: gocloud
