@@ -62,7 +62,7 @@ func push(r Registrator, images []string) (string, error) {
 	return r.Push(images)
 }
 
-func isRegistryValid(r Registrator) bool {
+func isRegistryValid(r Registrator) error {
 	return r.IsRegistryValid()
 }
 
@@ -110,8 +110,6 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	// validate cli flags
-
 	// point to active registry (docker, gcr, ...)
 	var activeRegistry interface{}
 	var url string
@@ -128,12 +126,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	// assert type Registrator
+	// assert activeRegistry as type Registrator to access methods
 	ar := activeRegistry.(Registrator)
 
 	// validate registry has required values
-	if ok := isRegistryValid(ar); !ok {
-		fmt.Fprintf(os.Stderr, "error: missing registry url from configuration: %#v\n", ar)
+	if err = isRegistryValid(ar); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+
+	// authenticate credentials for registry
+	if err = ar.Authenticate(); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
 		os.Exit(1)
 	}
 

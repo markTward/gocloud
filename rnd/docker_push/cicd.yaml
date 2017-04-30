@@ -6,11 +6,15 @@ github:
 
 registry:
   gcrregistry:
+    name: gcr
+    description: Google Container Registry
     host: gcr.io
     project: k8sdemo-159622
     repo: gocloud
     url: gcr.io/k8sdemo-159622/gocloud
   dockerregistry:
+    name: docker
+    description: Docker Hub
     host: docker.io
     account: marktward
     repo: gocloud
@@ -28,7 +32,7 @@ workflow:
     name: gke
     project: k8sdemo-159622
     cluster: k0
-  registry: gcr
+  registry: docker
   cdprovider:
     name: helm
     release: gocloud

@@ -19,25 +19,18 @@ type Registry struct {
 }
 
 type Registrator interface {
-	IsRegistryValid() bool
+	IsRegistryValid() error
 	Push([]string) (string, error)
 	Authenticate() error
 }
 
 type GCRRegistry struct {
-	Name    string
-	Host    string
-	Project string
-	Repo    string
-	Url     string
-}
-
-type DockerRegistry struct {
-	Name    string
-	Host    string
-	Account string
-	Repo    string
-	Url     string
+	Name        string
+	Description string
+	Host        string
+	Project     string
+	Repo        string
+	Url         string
 }
 
 func (r *GCRRegistry) Authenticate() (err error) {
@@ -53,24 +46,37 @@ func (r *GCRRegistry) Authenticate() (err error) {
 
 }
 
+func (gcr *GCRRegistry) Push(images []string) (msg string, err error) {
+	// TODO: real push!
+	msg = fmt.Sprintf("gcloud docker --push %v", images)
+	return msg, err
+}
+
+func (r *GCRRegistry) IsRegistryValid() (err error) {
+	if r.Url == "" {
+		err = fmt.Errorf("error: url missing from %v configuration", r.Description)
+	}
+	return err
+}
+
+type DockerRegistry struct {
+	Name        string
+	Description string
+	Host        string
+	Account     string
+	Repo        string
+	Url         string
+}
+
 func (r *DockerRegistry) Authenticate() (err error) {
 	return err
 }
 
-func (r *GCRRegistry) IsRegistryValid() bool {
-	return r.Url != ""
-}
-
-func (r *DockerRegistry) IsRegistryValid() bool {
-	return r.Url != ""
-}
-
-func (gcr *GCRRegistry) Push(images []string) (msg string, err error) {
-	if err = gcr.Authenticate(); err == nil {
-		// TODO: real push!
-		msg = fmt.Sprintf("gcloud docker --push %v", images)
+func (r *DockerRegistry) IsRegistryValid() (err error) {
+	if r.Url == "" {
+		err = fmt.Errorf("error: url missing from %v configuration", r.Description)
 	}
-	return msg, err
+	return err
 }
 
 func (docker *DockerRegistry) Push(images []string) (msg string, err error) {
