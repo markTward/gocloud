@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -37,8 +38,23 @@ func init() {
 	pr = flag.Int("pr", 0, prUsage)
 }
 
-func tag(r Registrator, tag string, event string, branch string, pr int) ([]string, error) {
-	return r.Tag(tag, event, branch, pr)
+func tag(url string, tag string, event string, branch string, pr int) ([]string, error) {
+	var images []string
+	// build tag image
+	image := url + ":" + tag
+	images = append(images, image)
+
+	switch event {
+	case "push":
+		images = append(images, url+":"+branch)
+		if branch == "master" {
+			images = append(images, url+":latest")
+		}
+	case "pull_request":
+		images = append(images, url+":PR-"+strconv.Itoa(pr))
+	}
+
+	return images, nil
 }
 
 func push(r Registrator) (string, error) {
@@ -67,28 +83,6 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	// point to active registry (docker, gcr, ...)
-	var activeRegistry interface{}
-
-	switch cfg.Workflow.Registry {
-	case "gcr":
-		activeRegistry = &cfg.Registry.GCRRegistry
-	case "docker":
-		activeRegistry = &cfg.Registry.DockerRegistry
-	default:
-		fmt.Fprintf(os.Stderr, "error: unsupported registry: %v\n", cfg.Workflow.Registry)
-		os.Exit(1)
-	}
-
-	// assert type Registrator
-	ar := activeRegistry.(Registrator)
-
-	// validate registry has required values
-	if ok := isRegistryValid(ar); !ok {
-		fmt.Fprintf(os.Stderr, "error: missing registry url from configuration: %#v\n", ar)
-		os.Exit(1)
-	}
-
 	// validate cli flags
 	if *buildTag == "" {
 		fmt.Fprintf(os.Stderr, "error: build tag a required value; use --tag option\n")
@@ -105,8 +99,33 @@ func main() {
 		os.Exit(1)
 	}
 
+	// point to active registry (docker, gcr, ...)
+	var activeRegistry interface{}
+	var url string
+
+	switch cfg.Workflow.Registry {
+	case "gcr":
+		activeRegistry = &cfg.Registry.GCRRegistry
+		url = cfg.Registry.GCRRegistry.Url
+	case "docker":
+		activeRegistry = &cfg.Registry.DockerRegistry
+		url = cfg.Registry.DockerRegistry.Url
+	default:
+		fmt.Fprintf(os.Stderr, "error: unsupported registry: %v\n", cfg.Workflow.Registry)
+		os.Exit(1)
+	}
+
+	// assert type Registrator
+	ar := activeRegistry.(Registrator)
+
+	// validate registry has required values
+	if ok := isRegistryValid(ar); !ok {
+		fmt.Fprintf(os.Stderr, "error: missing registry url from configuration: %#v\n", ar)
+		os.Exit(1)
+	}
+
 	var images []string
-	images, _ = tag(ar, *buildTag, *eventType, *branch, *pr)
+	images, _ = tag(url, *buildTag, *eventType, *branch, *pr)
 	fmt.Println("Tag Result:", images)
 
 	// push images

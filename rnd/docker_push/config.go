@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strconv"
-)
+import "fmt"
 
 type App struct {
 	Name string
@@ -18,7 +15,6 @@ type Registry struct {
 }
 
 type Registrator interface {
-	Tag(string, string, string, int) ([]string, error)
 	Push() (string, error)
 	IsRegistryValid() bool
 }
@@ -39,35 +35,8 @@ func (r *DockerRegistry) IsRegistryValid() bool {
 	return r.Url != ""
 }
 
-func (gcr *GCRRegistry) Tag(tag string, event string, branch string) ([]string, error) {
-	var images []string
-	image := gcr.Url + ":" + tag
-	images = append(images, image)
-	return images, nil
-}
-
 func (gcr *GCRRegistry) Push() (string, error) {
 	return fmt.Sprintf("gcloud docker --push: %v\n", gcr.Url), nil
-}
-
-func (docker *DockerRegistry) Tag(tag string, event string, branch string, pr int) ([]string, error) {
-	var images []string
-	// build tag image
-	image := docker.Url + ":" + tag
-	images = append(images, image)
-
-	fmt.Println("DEBUG Tag: ", tag, event, branch)
-	switch event {
-	case "push":
-		images = append(images, docker.Url+":"+branch)
-		if branch == "master" {
-			images = append(images, docker.Url+":latest")
-		}
-	case "pull_request":
-		images = append(images, docker.Url+":PR-"+strconv.Itoa(pr))
-	}
-
-	return images, nil
 }
 
 func (docker *DockerRegistry) Push() (string, error) {
