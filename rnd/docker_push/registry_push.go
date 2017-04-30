@@ -18,22 +18,27 @@ type Config struct {
 	Registry
 }
 
-var configFile, buildTag, eventType *string
+var configFile, buildTag, eventType, branch *string
+var pr *int
 
 func init() {
 	const (
 		defaultConfigFile = "cicd.yaml"
 		configFileUsage   = "configuration file containing project workflow values (default: cicd.yaml)"
 		buildTagUsage     = "existing image tag used as basis for further tags (required)"
-		eventTypeUsage    = "build event type from list: push, pull_request"
+		eventTypeUsage    = "build event type from list: push, pull_request (default push)"
+		branchTypeUsage   = "build branch (required)"
+		prUsage           = "pull request number (required when event type is pr)"
 	)
 	configFile = flag.String("config", defaultConfigFile, configFileUsage)
 	buildTag = flag.String("tag", "", buildTagUsage)
 	eventType = flag.String("eventType", "push", eventTypeUsage)
+	branch = flag.String("branch", "", branchTypeUsage)
+	pr = flag.Int("pr", 0, prUsage)
 }
 
-func tag(r Registrator, tag string, event string) ([]string, error) {
-	return r.Tag(tag, event)
+func tag(r Registrator, tag string, event string, branch string, pr int) ([]string, error) {
+	return r.Tag(tag, event, branch, pr)
 }
 
 func push(r Registrator) (string, error) {
@@ -84,14 +89,24 @@ func main() {
 		os.Exit(1)
 	}
 
-	// tag images
+	// validate cli flags
 	if *buildTag == "" {
 		fmt.Fprintf(os.Stderr, "error: build tag a required value; use --tag option\n")
 		os.Exit(1)
 	}
 
+	if *branch == "" {
+		fmt.Fprintf(os.Stderr, "error: build branch a required value; use --branch option\n")
+		os.Exit(1)
+	}
+
+	if *eventType == "pull_request" && *pr == 0 {
+		fmt.Fprintf(os.Stderr, "error: event type pull_request requires a PR number; use --pr option\n")
+		os.Exit(1)
+	}
+
 	var images []string
-	images, _ = tag(ar, *buildTag, *eventType)
+	images, _ = tag(ar, *buildTag, *eventType, *branch, *pr)
 	fmt.Println("Tag Result:", images)
 
 	// push images
