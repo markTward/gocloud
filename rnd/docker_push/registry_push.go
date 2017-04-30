@@ -1,8 +1,5 @@
 package main
 
-// TODO: commit tag, event type and branch flags and logic
-// TODO: create one each subscripts for gcr and docker
-
 import (
 	"flag"
 	"fmt"

@@ -15,8 +15,9 @@ type Registry struct {
 }
 
 type Registrator interface {
-	Push() (string, error)
 	IsRegistryValid() bool
+	Push() (string, error)
+	Authenticate() bool
 }
 
 type GCRRegistry struct {
@@ -25,6 +26,21 @@ type GCRRegistry struct {
 	Project string
 	Repo    string
 	Url     string
+}
+
+type DockerRegistry struct {
+	Name    string
+	Host    string
+	Account string
+	Repo    string
+	Url     string
+}
+
+func (r *GCRRegistry) Authenticate() bool {
+	return true
+}
+func (r *DockerRegistry) Authenticate() bool {
+	return true
 }
 
 func (r *GCRRegistry) IsRegistryValid() bool {
@@ -41,14 +57,6 @@ func (gcr *GCRRegistry) Push() (string, error) {
 
 func (docker *DockerRegistry) Push() (string, error) {
 	return fmt.Sprintf("docker push %v\n", docker.Url), nil
-}
-
-type DockerRegistry struct {
-	Name    string
-	Host    string
-	Account string
-	Repo    string
-	Url     string
 }
 
 type Workflow struct {
