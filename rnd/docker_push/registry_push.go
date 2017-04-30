@@ -126,7 +126,12 @@ func main() {
 	fmt.Println("Tag Result:", images)
 
 	// push images
-	result, err := push(ar.(Registrator))
+	var result string
+	if result, err = push(ar.(Registrator)); err != nil {
+		fmt.Fprintf(os.Stderr, "%v", err)
+		os.Exit(1)
+	}
+
 	fmt.Println("Push Result:", result)
 
 }

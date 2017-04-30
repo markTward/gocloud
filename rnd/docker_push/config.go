@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"os/exec"
+)
 
 type App struct {
 	Name string
@@ -17,7 +21,7 @@ type Registry struct {
 type Registrator interface {
 	IsRegistryValid() bool
 	Push() (string, error)
-	Authenticate() bool
+	Authenticate() error
 }
 
 type GCRRegistry struct {
@@ -36,9 +40,19 @@ type DockerRegistry struct {
 	Url     string
 }
 
-func (r *GCRRegistry) Authenticate() bool {
-	return true
+func (r *GCRRegistry) Authenticate() (err error) {
+	var stderr bytes.Buffer
+
+	basecmd := "gcloud"
+	args := []string{"auth", "activate-service-account", "--key-file", "client-secret.jsonXXX"}
+	cmd := exec.Command(basecmd, args...)
+	cmd.Stderr = &stderr
+	if err = cmd.Run(); err != nil {
+		err = fmt.Errorf("%v\n", stderr.String())
+	}
+	return err
 }
+
 func (r *DockerRegistry) Authenticate() bool {
 	return true
 }
@@ -51,8 +65,12 @@ func (r *DockerRegistry) IsRegistryValid() bool {
 	return r.Url != ""
 }
 
-func (gcr *GCRRegistry) Push() (string, error) {
-	return fmt.Sprintf("gcloud docker --push: %v\n", gcr.Url), nil
+func (gcr *GCRRegistry) Push() (msg string, err error) {
+	if err = gcr.Authenticate(); err == nil {
+		// TODO: real push!
+		msg = fmt.Sprintf("gcloud docker --push: %v\n", gcr.Url)
+	}
+	return msg, err
 }
 
 func (docker *DockerRegistry) Push() (string, error) {
