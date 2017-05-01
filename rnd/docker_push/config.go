@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type App struct {
@@ -55,6 +56,7 @@ func (r *GCRRegistry) Authenticate() (err error) {
 
 func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 	var stderr bytes.Buffer
+	var cmdOut []byte
 	// IDEA: could use single command to push all repo images: gcloud docker -- push gcr.io/k8sdemo-159622/gocloud
 	// but assumes that process ALWAYS wants ALL tags for repo to be pushed.  good for isolated build env, but ...
 	for _, image := range images {
@@ -63,9 +65,13 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 		cmd := exec.Command("gcloud", "docker", "--", "push", image)
 		cmd.Stderr = &stderr
 
-		if err = cmd.Run(); err != nil {
+		if cmdOut, err = cmd.Output(); err != nil {
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
+		}
+
+		for _, o := range strings.Split(strings.TrimSpace(string(cmdOut)), "\n") {
+			log.Println(o)
 		}
 
 		pushed = append(pushed, image)
@@ -109,12 +115,13 @@ func (r *DockerRegistry) Authenticate() (err error) {
 	cmd := exec.Command("docker", "login", "-u", dockerUser, "-p", dockerPass)
 	cmd.Stderr = &stderr
 
-	log.Printf("attempt docker login\n")
+	log.Printf("attempt docker login: %v\n", dockerUser)
 	if err = cmd.Run(); err != nil {
 		err = fmt.Errorf("%v", stderr.String())
 		return err
 	}
-	log.Printf("docker login successful\n")
+
+	log.Printf("docker login successful: %v\n", dockerUser)
 
 	return err
 }
@@ -128,17 +135,21 @@ func (r *DockerRegistry) IsRegistryValid() (err error) {
 
 func (docker *DockerRegistry) Push(images []string) (pushed []string, err error) {
 	var stderr bytes.Buffer
-	// IDEA: could use single command to push all repo images: gcloud docker -- push gcr.io/k8sdemo-159622/gocloud
-	// but assumes that process ALWAYS wants ALL tags for repo to be pushed.  good for isolated build env, but ...
+	var cmdOut []byte
+
 	for _, image := range images {
 		log.Println("attempt push to docker registry: ", image)
 
 		cmd := exec.Command("docker", "push", image)
 		cmd.Stderr = &stderr
 
-		if err = cmd.Run(); err != nil {
+		if cmdOut, err = cmd.Output(); err != nil {
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
+		}
+
+		for _, o := range strings.Split(strings.TrimSpace(string(cmdOut)), "\n") {
+			log.Println(o)
 		}
 
 		pushed = append(pushed, image)

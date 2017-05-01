@@ -35,6 +35,7 @@ workflow:
     project: k8sdemo-159622
     cluster: k0
   registry: docker
+  # registry: gcr
   cdprovider:
     name: helm
     release: gocloud
