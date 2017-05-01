@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 )
 
@@ -36,16 +37,18 @@ type GCRRegistry struct {
 }
 
 func (r *GCRRegistry) Authenticate() (err error) {
-
 	var stderr bytes.Buffer
+
 	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", r.KeyFile)
 	cmd.Stderr = &stderr
+
 	log.Printf("attempt gcr authenication\n")
 	if err = cmd.Run(); err != nil {
 		err = fmt.Errorf("%v", stderr.String())
+	} else {
+		log.Printf("gcr authenication successful\n")
 	}
 
-	log.Printf("gcr authenication successful\n")
 	return err
 
 }
@@ -56,14 +59,15 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 	// but assumes that process ALWAYS wants ALL tags for repo to be pushed.  good for isolated build env, but ...
 	for _, image := range images {
 		log.Println("attempt push to gcr: ", image)
+
 		cmd := exec.Command("gcloud", "docker", "--", "push", image)
 		cmd.Stderr = &stderr
 
 		if err = cmd.Run(); err != nil {
-			// log.Printf("DEBUG: %v: %v", image, stderr.String())
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
 		}
+
 		pushed = append(pushed, image)
 	}
 	return pushed, err
@@ -86,6 +90,32 @@ type DockerRegistry struct {
 }
 
 func (r *DockerRegistry) Authenticate() (err error) {
+	var stderr bytes.Buffer
+
+	dockerUser := os.Getenv("DOCKER_USER")
+	if dockerUser == "" {
+		err = fmt.Errorf("%v", "error: DOCKER_USER environment variable not set")
+		log.Println(err)
+		return err
+	}
+
+	dockerPass := os.Getenv("DOCKER_PASSWORD")
+	if dockerPass == "" {
+		err = fmt.Errorf("%v", "error: DOCKER_PASSWORD environment variable not set")
+		log.Println(err)
+		return err
+	}
+
+	cmd := exec.Command("docker", "login", "-u", dockerUser, "-p", dockerPass)
+	cmd.Stderr = &stderr
+
+	log.Printf("attempt docker login\n")
+	if err = cmd.Run(); err != nil {
+		err = fmt.Errorf("%v", stderr.String())
+		return err
+	}
+	log.Printf("docker login successful\n")
+
 	return err
 }
 

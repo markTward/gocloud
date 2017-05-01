@@ -157,7 +157,7 @@ func main() {
 
 	// authenticate credentials for registry
 	if err = ar.Authenticate(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
+		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
 
