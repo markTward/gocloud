@@ -127,9 +127,21 @@ func (r *DockerRegistry) IsRegistryValid() (err error) {
 }
 
 func (docker *DockerRegistry) Push(images []string) (pushed []string, err error) {
-	if err = docker.Authenticate(); err == nil {
-		// TODO: real push!
-		pushed = images
+	var stderr bytes.Buffer
+	// IDEA: could use single command to push all repo images: gcloud docker -- push gcr.io/k8sdemo-159622/gocloud
+	// but assumes that process ALWAYS wants ALL tags for repo to be pushed.  good for isolated build env, but ...
+	for _, image := range images {
+		log.Println("attempt push to docker registry: ", image)
+
+		cmd := exec.Command("docker", "push", image)
+		cmd.Stderr = &stderr
+
+		if err = cmd.Run(); err != nil {
+			err = fmt.Errorf("%v: %v", image, stderr.String())
+			break
+		}
+
+		pushed = append(pushed, image)
 	}
 	return pushed, err
 }
