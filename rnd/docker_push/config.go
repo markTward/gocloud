@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -37,17 +39,44 @@ type GCRRegistry struct {
 	KeyFile     string
 }
 
+func (r *GCRRegistry) getClientID() (email string, err error) {
+
+	// parse google credentials for identity
+	type clientSecret struct {
+		ClientEmail string `json:"client_email"`
+	}
+
+	// read in project config file
+	jsonInput, err := ioutil.ReadFile(r.KeyFile)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
+	// parse yaml into Config object
+	ce := clientSecret{}
+	err = json.Unmarshal([]byte(jsonInput), &ce)
+	log.Println(ce)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	return ce.ClientEmail, nil
+}
+
 func (r *GCRRegistry) Authenticate() (err error) {
 	var stderr bytes.Buffer
 
 	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", r.KeyFile)
 	cmd.Stderr = &stderr
 
-	log.Printf("attempt gcr authenication\n")
+	cid, _ := r.getClientID()
+
+	log.Printf("attempt gcr authenication: %v\n", cid)
 	if err = cmd.Run(); err != nil {
 		err = fmt.Errorf("%v", stderr.String())
 	} else {
-		log.Printf("gcr authenication successful\n")
+		log.Printf("gcr authenication successful: %v\n", cid)
 	}
 
 	return err
