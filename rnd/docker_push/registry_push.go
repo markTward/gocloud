@@ -82,10 +82,6 @@ func push(r Registrator, images []string) ([]string, error) {
 	return r.Push(images)
 }
 
-func isRegistryValid(r Registrator) error {
-	return r.IsRegistryValid()
-}
-
 func validateCLInput() (err error) {
 	if *buildTag == "" {
 		err = fmt.Errorf("%v\n", "build tag a required value; use --tag option")
@@ -151,7 +147,7 @@ func main() {
 	ar := activeRegistry.(Registrator)
 
 	// validate registry has required values
-	if err = isRegistryValid(ar); err != nil {
+	if err = ar.IsRegistryValid(); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
