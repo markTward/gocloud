@@ -88,21 +88,21 @@ func isRegistryValid(r Registrator) error {
 
 func validateCLInput() (err error) {
 	if *buildTag == "" {
-		err = fmt.Errorf("%v\n", "error: build tag a required value; use --tag option")
+		err = fmt.Errorf("%v\n", "build tag a required value; use --tag option")
 	}
 
 	if *branch == "" {
-		err = fmt.Errorf("%v\n", "error: build branch a required value; use --branch option")
+		err = fmt.Errorf("%v\n", "build branch a required value; use --branch option")
 	}
 
 	switch *event {
 	case "push", "pull_request":
 	default:
-		err = fmt.Errorf("%v\n", "error: event type must be one of: push, pull_request")
+		err = fmt.Errorf("%v\n", "event type must be one of: push, pull_request")
 	}
 
 	if *event == "pull_request" && *pr == 0 {
-		err = fmt.Errorf("%v\n", "error: event type pull_request requires a PR number; use --pr option")
+		err = fmt.Errorf("%v\n", "event type pull_request requires a PR number; use --pr option")
 	}
 	return err
 }
@@ -127,7 +127,8 @@ func main() {
 	cfg := Config{}
 	err = yaml.Unmarshal([]byte(yamlInput), &cfg)
 	if err != nil {
-		log.Fatalf("error: %v", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
 	}
 
 	// point to active registry (docker, gcr, ...)
@@ -151,20 +152,20 @@ func main() {
 
 	// validate registry has required values
 	if err = isRegistryValid(ar); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
 	// authenticate credentials for registry
 	if err = ar.Authenticate(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 
 	// tag images
 	var images []string
 	if images, err = tag(url, *buildTag, *event, *branch, *pr); err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
+		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
 	}
 	log.Println("tagged images:", images)
@@ -172,7 +173,7 @@ func main() {
 	// push images
 	var result []string
 	if result, err = push(ar, images); err != nil {
-		fmt.Fprintf(os.Stderr, "%v", err)
+		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
 	}
 	log.Println("pushed images:", result)

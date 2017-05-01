@@ -39,38 +39,21 @@ type GCRRegistry struct {
 	KeyFile     string
 }
 
-func (r *GCRRegistry) getClientID() (email string, err error) {
-
-	// parse google credentials for identity
-	type clientSecret struct {
-		ClientEmail string `json:"client_email"`
-	}
-
-	// read in project config file
-	jsonInput, err := ioutil.ReadFile(r.KeyFile)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
-	}
-
-	// parse yaml into Config object
-	ce := clientSecret{}
-	err = json.Unmarshal([]byte(jsonInput), &ce)
-	log.Println(ce)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	return ce.ClientEmail, nil
-}
-
 func (r *GCRRegistry) Authenticate() (err error) {
 	var stderr bytes.Buffer
+	var cid string
+
+	if _, err = os.Stat(r.KeyFile); os.IsNotExist(err) {
+		err = fmt.Errorf("gcloud authentication: %v", err)
+		return err
+	}
 
 	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", r.KeyFile)
 	cmd.Stderr = &stderr
 
-	cid, _ := r.getClientID()
+	if cid, err = r.getClientID(); err != nil {
+		return fmt.Errorf("gcloud authentication: %v", err)
+	}
 
 	log.Printf("attempt gcr authenication: %v\n", cid)
 	if err = cmd.Run(); err != nil {
@@ -110,9 +93,29 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 
 func (r *GCRRegistry) IsRegistryValid() (err error) {
 	if r.Url == "" {
-		err = fmt.Errorf("error: url missing from %v configuration", r.Description)
+		err = fmt.Errorf("url missing from %v configuration", r.Description)
 	}
 	return err
+}
+
+func (r *GCRRegistry) getClientID() (email string, err error) {
+
+	// parse google credentials for identity
+	type clientSecret struct {
+		ClientEmail string `json:"client_email"`
+	}
+
+	// read in service account credentials file
+	var jsonInput []byte
+	if jsonInput, err = ioutil.ReadFile(r.KeyFile); err != nil {
+		return "", fmt.Errorf("get service account id: %v", err)
+	}
+
+	// parse json for client email
+	ce := clientSecret{}
+	err = json.Unmarshal([]byte(jsonInput), &ce)
+
+	return ce.ClientEmail, err
 }
 
 type DockerRegistry struct {
@@ -129,14 +132,14 @@ func (r *DockerRegistry) Authenticate() (err error) {
 
 	dockerUser := os.Getenv("DOCKER_USER")
 	if dockerUser == "" {
-		err = fmt.Errorf("%v", "error: DOCKER_USER environment variable not set")
+		err = fmt.Errorf("DOCKER_USER environment variable not set")
 		log.Println(err)
 		return err
 	}
 
 	dockerPass := os.Getenv("DOCKER_PASSWORD")
 	if dockerPass == "" {
-		err = fmt.Errorf("%v", "error: DOCKER_PASSWORD environment variable not set")
+		err = fmt.Errorf("DOCKER_PASSWORD environment variable not set")
 		log.Println(err)
 		return err
 	}
@@ -157,7 +160,7 @@ func (r *DockerRegistry) Authenticate() (err error) {
 
 func (r *DockerRegistry) IsRegistryValid() (err error) {
 	if r.Url == "" {
-		err = fmt.Errorf("error: url missing from %v configuration", r.Description)
+		err = fmt.Errorf("url missing from %v configuration", r.Description)
 	}
 	return err
 }
