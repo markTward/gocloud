@@ -58,9 +58,8 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	}
 
 	// BUG: gcloud returning successful result over stderr (why?)
-	for _, o := range strings.Split(strings.TrimSpace(string(stderr.String())), "\n") {
-		log.Println(o)
-	}
+	logMultiLineOutput(stderr.Bytes())
+
 	return err
 
 }
@@ -80,12 +79,10 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
 		}
-
-		for _, o := range strings.Split(strings.TrimSpace(string(cmdOut)), "\n") {
-			log.Println(o)
-		}
+		logMultiLineOutput(cmdOut)
 
 		pushed = append(pushed, image)
+
 	}
 	return pushed, err
 }
@@ -129,6 +126,7 @@ type DockerRegistry struct {
 
 func (r *DockerRegistry) Authenticate() (err error) {
 	var stderr bytes.Buffer
+	var cmdOut []byte
 
 	dockerUser := os.Getenv("DOCKER_USER")
 	if dockerUser == "" {
@@ -146,14 +144,14 @@ func (r *DockerRegistry) Authenticate() (err error) {
 
 	cmd := exec.Command("docker", "login", "-u", dockerUser, "-p", dockerPass)
 	cmd.Stderr = &stderr
+	log.Println(cmd.Args[:4])
 
-	log.Printf("attempt docker login: %v\n", dockerUser)
-	if err = cmd.Run(); err != nil {
+	if cmdOut, err = cmd.Output(); err != nil {
 		err = fmt.Errorf("%v", stderr.String())
 		return err
 	}
 
-	log.Printf("docker login successful: %v\n", dockerUser)
+	logMultiLineOutput(cmdOut)
 
 	return err
 }
@@ -180,9 +178,7 @@ func (docker *DockerRegistry) Push(images []string) (pushed []string, err error)
 			break
 		}
 
-		for _, o := range strings.Split(strings.TrimSpace(string(cmdOut)), "\n") {
-			log.Println(o)
-		}
+		logMultiLineOutput(cmdOut)
 
 		pushed = append(pushed, image)
 	}
@@ -215,5 +211,11 @@ type Workflow struct {
 		Release   string
 		Namespace string
 		ChartDir  string
+	}
+}
+
+func logMultiLineOutput(cmdOut []byte) {
+	for _, o := range strings.Split(strings.TrimSpace(string(cmdOut)), "\n") {
+		log.Println(o)
 	}
 }
