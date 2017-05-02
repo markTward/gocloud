@@ -20,6 +20,7 @@ registry:
     host: docker.io
     account: marktward
     repo: gocloud
+    # url: docker.io/marktward/gocloud
     url: docker.io/marktward/busybox
 
 workflow:
@@ -34,8 +35,8 @@ workflow:
     name: gke
     project: k8sdemo-159622
     cluster: k0
-  # registry: docker
-  registry: gcr
+  registry: docker
+  # registry: gcr
   cdprovider:
     name: helm
     release: gocloud

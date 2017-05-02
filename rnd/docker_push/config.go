@@ -41,7 +41,6 @@ type GCRRegistry struct {
 
 func (r *GCRRegistry) Authenticate() (err error) {
 	var stderr bytes.Buffer
-	var cid string
 
 	if _, err = os.Stat(r.KeyFile); os.IsNotExist(err) {
 		err = fmt.Errorf("gcloud authentication: %v", err)
@@ -51,17 +50,17 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", r.KeyFile)
 	cmd.Stderr = &stderr
 
-	if cid, err = r.getClientID(); err != nil {
-		return fmt.Errorf("gcloud authentication: %v", err)
-	}
+	log.Println(cmd.Args)
 
-	log.Printf("attempt gcr authenication: %v\n", cid)
 	if err = cmd.Run(); err != nil {
-		err = fmt.Errorf("%v", stderr.String())
-	} else {
-		log.Printf("gcr authenication successful: %v\n", cid)
+		err = fmt.Errorf("%v", strings.TrimSpace(string(stderr.String())))
+		return err
 	}
 
+	// BUG: gcloud returning successful result over stderr (why?)
+	for _, o := range strings.Split(strings.TrimSpace(string(stderr.String())), "\n") {
+		log.Println(o)
+	}
 	return err
 
 }
@@ -98,6 +97,7 @@ func (r *GCRRegistry) IsRegistryValid() (err error) {
 	return err
 }
 
+// TODO: obsolete now that gcloud auth output captured.  but would json parse of other fields be useful?
 func (r *GCRRegistry) getClientID() (email string, err error) {
 
 	// parse google credentials for identity
@@ -112,10 +112,10 @@ func (r *GCRRegistry) getClientID() (email string, err error) {
 	}
 
 	// parse json for client email
-	ce := clientSecret{}
-	err = json.Unmarshal([]byte(jsonInput), &ce)
+	cs := clientSecret{}
+	err = json.Unmarshal([]byte(jsonInput), &cs)
 
-	return ce.ClientEmail, err
+	return cs.ClientEmail, err
 }
 
 type DockerRegistry struct {
