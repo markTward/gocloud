@@ -173,26 +173,3 @@ func main() {
 	log.Println("pushed images:", result)
 
 }
-
-func debugYAML(yamlInput []byte, cfg Config) {
-
-	fmt.Println("DEBUG yamlInput:", yamlInput)
-
-	m := make(map[interface{}]interface{})
-	err := yaml.Unmarshal([]byte(yamlInput), &m)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	fmt.Printf("--- m:\n%v\n\n", m)
-
-	d, err := yaml.Marshal(&cfg)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-
-	d, err = yaml.Marshal(&m)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	fmt.Printf("--- m dump:\n%s\n\n", string(d))
-}
