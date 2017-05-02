@@ -78,10 +78,6 @@ func tag(url string, tag string, event string, branch string, pr int) (images []
 	return images, err
 }
 
-func push(r Registrator, images []string) ([]string, error) {
-	return r.Push(images)
-}
-
 func validateCLInput() (err error) {
 	if *buildTag == "" {
 		err = fmt.Errorf("%v\n", "build tag a required value; use --tag option")
@@ -131,6 +127,7 @@ func main() {
 	var activeRegistry interface{}
 	var url string
 
+	// TODO: return tag() to receiver and eliminate need to capture url
 	switch cfg.Workflow.Registry {
 	case "gcr":
 		activeRegistry = &cfg.Registry.GCRRegistry
@@ -158,6 +155,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO: return tag() to receiver and eliminate need to capture url
 	// tag images
 	var images []string
 	if images, err = tag(url, *buildTag, *event, *branch, *pr); err != nil {
@@ -168,7 +166,7 @@ func main() {
 
 	// push images
 	var result []string
-	if result, err = push(ar, images); err != nil {
+	if result, err = ar.Push(images); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
 	}
