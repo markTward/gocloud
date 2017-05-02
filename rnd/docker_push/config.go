@@ -53,7 +53,9 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	log.Println(cmd.Args)
 
 	if err = cmd.Run(); err != nil {
-		err = fmt.Errorf("%v", strings.TrimSpace(string(stderr.String())))
+		logMultiLineOutput(stderr.Bytes())
+		err = fmt.Errorf("%v", stderr.String())
+		// err = fmt.Errorf("%v", strings.TrimSpace(string(stderr.String())))
 		return err
 	}
 
@@ -76,6 +78,7 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 		cmd.Stderr = &stderr
 
 		if cmdOut, err = cmd.Output(); err != nil {
+			logMultiLineOutput(stderr.Bytes())
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
 		}
@@ -147,6 +150,7 @@ func (r *DockerRegistry) Authenticate() (err error) {
 	log.Println(cmd.Args[:4])
 
 	if cmdOut, err = cmd.Output(); err != nil {
+		logMultiLineOutput(stderr.Bytes())
 		err = fmt.Errorf("%v", stderr.String())
 		return err
 	}

@@ -151,7 +151,7 @@ func main() {
 
 	// authenticate credentials for registry
 	if err = ar.Authenticate(); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
 	}
 
@@ -159,6 +159,7 @@ func main() {
 	// tag images
 	var images []string
 	if images, err = tag(url, *buildTag, *event, *branch, *pr); err != nil {
+		log.Printf("error: %v", err)
 		fmt.Fprintf(os.Stderr, "error: %v", err)
 		os.Exit(1)
 	}
