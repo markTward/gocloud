@@ -24,11 +24,11 @@ var pr *int
 func init() {
 	const (
 		defaultConfigFile = "cicd.yaml"
-		configFileUsage   = "configuration file containing project workflow values (default: cicd.yaml)"
+		configFileUsage   = "configuration file containing project workflow values"
 		buildTagUsage     = "existing image tag used as basis for further tags (required)"
-		eventUsage        = "build event type from list: push, pull_request (default push)"
+		eventUsage        = "build event type from list: push, pull_request"
 		branchTypeUsage   = "build branch (required)"
-		prUsage           = "pull request number (required when event type is pr)"
+		prUsage           = "pull request number (required when event type is pull_request)"
 	)
 	configFile = flag.String("config", defaultConfigFile, configFileUsage)
 	buildTag = flag.String("tag", "", buildTagUsage)

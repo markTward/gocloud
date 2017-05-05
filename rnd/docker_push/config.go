@@ -53,14 +53,13 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	log.Println(cmd.Args)
 
 	if err = cmd.Run(); err != nil {
-		logMultiLineOutput(stderr.Bytes())
+		logCmdOutput(stderr.Bytes())
 		err = fmt.Errorf("%v", stderr.String())
-		// err = fmt.Errorf("%v", strings.TrimSpace(string(stderr.String())))
 		return err
 	}
 
 	// BUG: gcloud returning successful result over stderr (why?)
-	logMultiLineOutput(stderr.Bytes())
+	logCmdOutput(stderr.Bytes())
 
 	return err
 
@@ -78,11 +77,11 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 		cmd.Stderr = &stderr
 
 		if cmdOut, err = cmd.Output(); err != nil {
-			logMultiLineOutput(stderr.Bytes())
+			logCmdOutput(stderr.Bytes())
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
 		}
-		logMultiLineOutput(cmdOut)
+		logCmdOutput(cmdOut)
 
 		pushed = append(pushed, image)
 
@@ -150,12 +149,12 @@ func (r *DockerRegistry) Authenticate() (err error) {
 	log.Println(cmd.Args[:4])
 
 	if cmdOut, err = cmd.Output(); err != nil {
-		logMultiLineOutput(stderr.Bytes())
+		logCmdOutput(stderr.Bytes())
 		err = fmt.Errorf("%v", stderr.String())
 		return err
 	}
 
-	logMultiLineOutput(cmdOut)
+	logCmdOutput(cmdOut)
 
 	return err
 }
@@ -182,7 +181,7 @@ func (docker *DockerRegistry) Push(images []string) (pushed []string, err error)
 			break
 		}
 
-		logMultiLineOutput(cmdOut)
+		logCmdOutput(cmdOut)
 
 		pushed = append(pushed, image)
 	}
@@ -218,7 +217,7 @@ type Workflow struct {
 	}
 }
 
-func logMultiLineOutput(cmdOut []byte) {
+func logCmdOutput(cmdOut []byte) {
 	for _, o := range strings.Split(strings.TrimSpace(string(cmdOut)), "\n") {
 		log.Println(o)
 	}
