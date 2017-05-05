@@ -27,6 +27,7 @@ type Registrator interface {
 	IsRegistryValid() error
 	Push([]string) ([]string, error)
 	Authenticate() error
+	GetRepoURL() string
 }
 
 type GCRRegistry struct {
@@ -37,6 +38,12 @@ type GCRRegistry struct {
 	Repo        string
 	Url         string
 	KeyFile     string
+}
+
+func (r *GCRRegistry) GetRepoURL() (repoURL string) {
+	repo := []string{r.Host, r.Project, r.Repo}
+	repoURL = strings.Join(repo, "/")
+	return repoURL
 }
 
 func (r *GCRRegistry) Authenticate() (err error) {
