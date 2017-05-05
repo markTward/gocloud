@@ -55,12 +55,13 @@ before_script:
 script:
 - go test -v ./...
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
+- "go build -o $GOPATH/bin/registry_push ./rnd/docker_push/"
 after_success:
 # select docker repo target by branch
 # - "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
 # - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
 # - "./deploy/travis/docker_push.sh"
-- "./rnd/docker_push/*.go --branch $TRAVIS_BRANCH --config ./rnd/docker_push/cicd.yaml --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG"
+- "$GOPATH/bin/registry_push --branch $TRAVIS_BRANCH --config ./rnd/docker_push/cicd.yaml --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG"
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts

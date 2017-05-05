@@ -11,8 +11,8 @@ registry:
     host: gcr.io
     project: k8sdemo-159622
     repo: gocloud
-    url: gcr.io/k8sdemo-159622/busybox
-    # url: gcr.io/k8sdemo-159622/gocloud
+    # url: gcr.io/k8sdemo-159622/busybox
+    url: gcr.io/k8sdemo-159622/gocloud
     keyfile: ./client-secret.json
   dockerregistry:
     name: docker
@@ -20,8 +20,8 @@ registry:
     host: docker.io
     account: marktward
     repo: gocloud
-    # url: docker.io/marktward/gocloud
-    url: docker.io/marktward/busybox
+    url: docker.io/marktward/gocloud
+    # url: docker.io/marktward/busybox
 
 workflow:
   enabled: true
