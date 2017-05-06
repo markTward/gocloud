@@ -4,11 +4,7 @@
 echo "helm/k8s install"
 echo "args: $@"
 
-# TODO: move to travis config and use as arg to script
-# if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]];
-# then export DOCKER_REPO=gcr.io/$GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME;
-# else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]');
-# fi
+# TODO: derive DOCKER_REPO from cicd.yaml if move to go-based script
 
 if [[ $# -ne 5 ]]
 then
