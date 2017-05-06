@@ -22,13 +22,13 @@ before_install:
 - GOCLOUD_CICD_CONFIG_DIR=./rnd/docker_push
 - GOCLOUD_CICD_CONFIG_FILE=cicd.yaml
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
-- env | grep -v DOCKER | sort
 - mkdir -p $GOCLOUD_CICD_DIR
 - pip install -r $GOCLOUD_CICD_CONFIG_DIR/requirements.txt
 - alias cicdread="python -c 'import sys, yaml, json; .json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)'"
-- export CICD_BRANCH=$(cfgread < rnd/$GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq .workflow.github.branch)
+- export GO_CLOUD_CICD_BRANCH=$(cfgread < $GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq .workflow.github.branch)
+- env | grep -v DOCKER | sort
 install:
-- git clone -b $CICD_BRANCH https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
+- git clone -b $GO_CLOUD_CICD_BRANCH https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
 - exit 1
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
