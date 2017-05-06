@@ -69,13 +69,13 @@ before_deploy:
 - NAMESPACE=$GOCLOUD_PROJECT_NAME
 # set DOCKER_REPO env var for k8s deployment; forcing to gcr for testing
 # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-- export DOCKER_REPO=gcr.io/k8sdemo-159622/gocloud
+- DOCKER_REPO=gcr.io/$GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME
 deploy:
   # TODO: add mechanism for helm --dry-run versus deploy
   - provider: script
     on:
       all_branches: true
-    script: deploy/travis/deploy_k8s.sh gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
+    script: deploy/travis/deploy_k8s.sh $DOCKER_REPO gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
 after_deploy:
 - sudo kubectl get svc,deploy,pod --namespace=$NAMESPACE
 - sudo helm list
