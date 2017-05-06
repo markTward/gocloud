@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -19,8 +18,7 @@ type Config struct {
 	Registry
 }
 
-var configFile, buildTag, event, branch, baseImage *string
-var pr *int
+var configFile, buildTag, event, branch, baseImage, pr *string
 
 func init() {
 	const (
@@ -37,10 +35,10 @@ func init() {
 	buildTag = flag.String("tag", "", buildTagUsage)
 	event = flag.String("event", "push", eventUsage)
 	branch = flag.String("branch", "", branchTypeUsage)
-	pr = flag.Int("pr", 0, prUsage)
+	pr = flag.String("pr", "", prUsage)
 }
 
-func makeTagList(repoURL string, refImage string, event string, branch string, pr int) (images []string, err error) {
+func makeTagList(repoURL string, refImage string, event string, branch string, pr string) (images []string, err error) {
 
 	log.Println("Tagger args:", repoURL, refImage, event, branch, pr)
 
@@ -58,7 +56,7 @@ func makeTagList(repoURL string, refImage string, event string, branch string, p
 			images = append(images, repoURL+":latest")
 		}
 	case "pull_request":
-		images = append(images, repoURL+":PR-"+strconv.Itoa(pr))
+		images = append(images, repoURL+":PR-"+pr)
 	}
 
 	log.Println("tagged images:", images)
@@ -102,7 +100,7 @@ func validateCLInput() (err error) {
 		err = fmt.Errorf("%v\n", "event type must be one of: push, pull_request")
 	}
 
-	if *event == "pull_request" && *pr == 0 {
+	if *event == "pull_request" && *pr == "" {
 		err = fmt.Errorf("%v\n", "event type pull_request requires a PR number; use --pr option")
 	}
 	return err
