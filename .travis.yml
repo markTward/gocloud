@@ -67,12 +67,9 @@ before_deploy:
 - sudo helm lint --strict --debug deploy/helm/gocloud/
 - sudo helm list
 - NAMESPACE=$GOCLOUD_PROJECT_NAME
-# set DOCKER_REPO env var for k8s deployment
+# set DOCKER_REPO env var for k8s deployment; forcing to gcr for testing
 # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-- "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]];
-then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME;
-else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]');
-fi"
+- export DOCKER_REPO=gcr.io/k8sdemo-159622/gocloud
 deploy:
   # TODO: add mechanism for helm --dry-run versus deploy
   - provider: script
