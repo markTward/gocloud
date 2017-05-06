@@ -28,7 +28,7 @@ before_install:
 - sudo apt-get install -y jq
 - which jq || true
 - jq --version || true
-- export GO_CLOUD_CICD_BRANCH=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq .workflow.github.branch)
+- export GO_CLOUD_CICD_BRANCH=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq -r .workflow.github.branch)
 - env | grep -v DOCKER | sort
 install:
 - git clone -b $GO_CLOUD_CICD_BRANCH https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
