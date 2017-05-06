@@ -29,7 +29,7 @@ workflow:
   enabled: true
   github:
     repo: markTward/gocloud-cicd
-    branch: master
+    branch: dev
   ciprovider:
     name: travis
     plan: A

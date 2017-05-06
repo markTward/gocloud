@@ -26,8 +26,6 @@ before_install:
 - pip install -r $GOCLOUD_CICD_CONFIG_DIR/requirements.txt
 - sudo apt-get update
 - sudo apt-get install -y jq
-- which jq || true
-- jq --version || true
 - export GO_CLOUD_CICD_BRANCH=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq -r .workflow.github.branch)
 - env | grep -v DOCKER | sort
 install:
