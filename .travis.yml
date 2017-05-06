@@ -18,16 +18,18 @@ services:
 - docker
 before_install:
 - pwd
-- env | grep -v DOCKER | grep -v GOCLOUD | sort
+# bootstrap gocloud-cicd branch to clone
+- GOCLOUD_CICD_CONFIG_DIR=./rnd/docker_push
+- GOCLOUD_CICD_CONFIG_FILE=cicd.yaml
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
+- env | grep -v DOCKER | sort
 - mkdir -p $GOCLOUD_CICD_DIR
-# TODO: configure ability to clone commit or branch: git clone -b <branch> <remote_repo>
-- which python || true
-- python --version || true
-- which pip || true
-- pip --version || true
-- git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
+- pip install -r $GOCLOUD_CICD_CONFIG_DIR/requirements.txt
+- alias cicdread="python -c 'import sys, yaml, json; .json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)'"
+- export CICD_BRANCH=$(cfgread < rnd/$GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq .workflow.github.branch)
 install:
+- git clone -b $CICD_BRANCH https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
+- exit 1
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
 # install helm
