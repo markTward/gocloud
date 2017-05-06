@@ -24,6 +24,10 @@ before_install:
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
 - mkdir -p $GOCLOUD_CICD_DIR
 - pip install -r $GOCLOUD_CICD_CONFIG_DIR/requirements.txt
+- sudo apt-get update
+- sudo apt-get install -y jq
+- which jq || true
+- jq --version || true
 - alias cicdread="python -c 'import sys, yaml, json; .json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)'"
 - export GO_CLOUD_CICD_BRANCH=$(cicdread < $GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq .workflow.github.branch)
 - env | grep -v DOCKER | sort
