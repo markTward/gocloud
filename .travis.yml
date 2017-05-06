@@ -57,10 +57,6 @@ script:
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 - "go build -o $GOPATH/bin/registry_push ./rnd/docker_push/"
 after_success:
-# select docker repo target by branch
-# - "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]]; then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME; else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]'); fi"
-# - "./$GOCLOUD_CICD_DIR/travis/docker_push.sh"
-# - "./deploy/travis/docker_push.sh"
 - "sudo $GOPATH/bin/registry_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config ./rnd/docker_push/cicd.yaml --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG"
 before_deploy:
 # show k8s context
@@ -71,6 +67,12 @@ before_deploy:
 - sudo helm lint --strict --debug deploy/helm/gocloud/
 - sudo helm list
 - NAMESPACE=$GOCLOUD_PROJECT_NAME
+# set DOCKER_REPO env var for k8s deployment
+# TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
+- "if [[ $TRAVIS_BRANCH =~ $BRANCH_REGEX ]];
+then export DOCKER_REPO=gcr.io/GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME;
+else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]');
+fi"
 deploy:
   # TODO: add mechanism for helm --dry-run versus deploy
   - provider: script
