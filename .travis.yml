@@ -75,7 +75,7 @@ deploy:
   - provider: script
     on:
       all_branches: true
-    script: deploy/travis/deploy_k8s.sh $DOCKER_REPO gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
+    script: deploy/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
 after_deploy:
 - sudo kubectl get svc,deploy,pod --namespace=$NAMESPACE
 - sudo helm list

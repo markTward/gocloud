@@ -10,16 +10,18 @@ echo "args: $@"
 # else export DOCKER_REPO=$(echo $TRAVIS_REPO_SLUG | tr '[:upper:]' '[:lower:]');
 # fi
 
-if [[ $# -ne 3 ]]
+if [[ $# -ne 5 ]]
 then
   echo "error: incorrect number of required positional args"
-  echo "usage: deploy_k8s.sh release-name dry-run namespace"
+  echo "usage: deploy_k8s.sh repository tag release-name dry-run namespace"
   exit 1
 fi
 
-RELEASE_NAME=$1
-DRYRUN=$2
-NAMESPACE=$3
+DOCKER_REPO=$1
+COMMIT_TAG=$2
+RELEASE_NAME=$3
+DRYRUN=$4
+NAMESPACE=$5
 
 if [ $DRYRUN == "DRYRUN" ];
   then
@@ -27,11 +29,12 @@ if [ $DRYRUN == "DRYRUN" ];
     echo "using --dry-run option; service not deployed."
 fi
 
+echo registry/repo: $DOCKER_REPO
+echo commit tag: $COMMIT_TAG
 echo release name: $RELEASE_NAME
 echo dryrun: $DRYRUN_OPTION
 echo namespace: $NAMESPACE
-echo branch: $TRAVIS_BRANCH
-echo image: $DOCKER_REPO:$DOCKER_COMMIT_TAG
+echo image: $DOCKER_REPO:COMMIT_TAG
 
 # BUG: helm upgrade` does not re-create namespace if it's been deleted. https://github.com/kubernetes/helm/issues/2013
 # create namespace all cases ignoring error
@@ -44,7 +47,7 @@ $DRYRUN_OPTION \
 --install $RELEASE_NAME \
 --namespace=$NAMESPACE \
 --set service.gocloudAPI.image.repository=$DOCKER_REPO \
---set service.gocloudAPI.image.tag=$DOCKER_COMMIT_TAG \
+--set service.gocloudAPI.image.tag=$COMMIT_TAG \
 --set service.gocloudGrpc.image.repository=$DOCKER_REPO \
---set service.gocloudGrpc.image.tag=$DOCKER_COMMIT_TAG \
+--set service.gocloudGrpc.image.tag=$COMMIT_TAG \
 deploy/helm/gocloud
