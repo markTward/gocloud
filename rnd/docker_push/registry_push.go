@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -106,28 +107,35 @@ func validateCLInput() (err error) {
 	return err
 }
 
+func exitScript(err error, exit bool) {
+	s := strings.TrimSpace(err.Error())
+	log.Printf("error: %v", s)
+	if exit {
+		fmt.Fprintf(os.Stderr, "error: %v\n", s)
+		os.Exit(1)
+	}
+}
 func main() {
 
 	// parse and validate CLI
 	flag.Parse()
+	log.Printf("command arguments: %#v\n", os.Args)
+
 	if err := validateCLInput(); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// read in project config file
 	yamlInput, err := ioutil.ReadFile(*configFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// parse yaml into Config object
 	cfg := Config{}
 	err = yaml.Unmarshal([]byte(yamlInput), &cfg)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// point to active registry (docker, gcr, ...)
@@ -140,8 +148,7 @@ func main() {
 	case "docker":
 		activeRegistry = &cfg.Registry.DockerRegistry
 	default:
-		fmt.Fprintf(os.Stderr, "error: unsupported registry: %v\n", cfg.Workflow.Registry)
-		os.Exit(1)
+		exitScript(errors.New(fmt.Sprintf("unsupported registry: %v\n", cfg.Workflow.Registry)), true)
 	}
 
 	// assert activeRegistry as type Registrator to access methods
@@ -149,36 +156,29 @@ func main() {
 
 	// validate registry has required values
 	if err = ar.IsRegistryValid(); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// authenticate credentials for registry
 	if err = ar.Authenticate(); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// make list of images to tag
 	var images []string
 	if images, err = makeTagList(ar.GetRepoURL(), *baseImage, *event, *branch, *pr); err != nil {
-		log.Printf("error: %v", err)
-		fmt.Fprintf(os.Stderr, "error: %v", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// tag images
 	if err = tagImages(*baseImage, images); err != nil {
-		log.Printf("error: %v", err)
-		fmt.Fprintf(os.Stderr, "error: %v", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 
 	// push images
 	var result []string
 	if result, err = ar.Push(images); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %v", err)
-		os.Exit(1)
+		exitScript(err, true)
 	}
 	log.Println("pushed images:", result)
 

@@ -57,7 +57,7 @@ func (r *GCRRegistry) Authenticate() (err error) {
 	cmd := exec.Command("gcloud", "auth", "activate-service-account", "--key-file", r.KeyFile)
 	cmd.Stderr = &stderr
 
-	log.Println(cmd.Args)
+	log.Println(strings.Join(cmd.Args, " "))
 
 	if err = cmd.Run(); err != nil {
 		logCmdOutput(stderr.Bytes())
@@ -78,16 +78,18 @@ func (gcr *GCRRegistry) Push(images []string) (pushed []string, err error) {
 	// IDEA: could use single command to push all repo images: gcloud docker -- push gcr.io/k8sdemo-159622/gocloud
 	// but assumes that process ALWAYS wants ALL tags for repo to be pushed.  good for isolated build env, but ...
 	for _, image := range images {
-		log.Println("attempt push to gcr: ", image)
 
 		cmd := exec.Command("gcloud", "docker", "--", "push", image)
 		cmd.Stderr = &stderr
+
+		log.Println(strings.Join(cmd.Args, " "))
 
 		if cmdOut, err = cmd.Output(); err != nil {
 			logCmdOutput(stderr.Bytes())
 			err = fmt.Errorf("%v: %v", image, stderr.String())
 			break
 		}
+
 		logCmdOutput(cmdOut)
 
 		pushed = append(pushed, image)
@@ -140,23 +142,20 @@ func (r *DockerRegistry) Authenticate() (err error) {
 	dockerUser := os.Getenv("DOCKER_USER")
 	if dockerUser == "" {
 		err = fmt.Errorf("DOCKER_USER environment variable not set")
-		log.Println(err)
 		return err
 	}
 
 	dockerPass := os.Getenv("DOCKER_PASSWORD")
 	if dockerPass == "" {
 		err = fmt.Errorf("DOCKER_PASSWORD environment variable not set")
-		log.Println(err)
 		return err
 	}
 
 	cmd := exec.Command("docker", "login", "-u", dockerUser, "-p", dockerPass)
 	cmd.Stderr = &stderr
-	log.Println(cmd.Args[:4])
+	log.Println(strings.Join(cmd.Args[:4], " "), " -p ********")
 
 	if cmdOut, err = cmd.Output(); err != nil {
-		logCmdOutput(stderr.Bytes())
 		err = fmt.Errorf("%v", stderr.String())
 		return err
 	}
@@ -178,10 +177,11 @@ func (docker *DockerRegistry) Push(images []string) (pushed []string, err error)
 	var cmdOut []byte
 
 	for _, image := range images {
-		log.Println("attempt push to docker registry: ", image)
 
 		cmd := exec.Command("docker", "push", image)
 		cmd.Stderr = &stderr
+
+		log.Println(strings.Join(cmd.Args, " "))
 
 		if cmdOut, err = cmd.Output(); err != nil {
 			err = fmt.Errorf("%v: %v", image, stderr.String())
@@ -193,6 +193,12 @@ func (docker *DockerRegistry) Push(images []string) (pushed []string, err error)
 		pushed = append(pushed, image)
 	}
 	return pushed, err
+}
+
+func (r *DockerRegistry) GetRepoURL() (repoURL string) {
+	repo := []string{r.Host, r.Account, r.Repo}
+	repoURL = strings.Join(repo, "/")
+	return repoURL
 }
 
 type Workflow struct {

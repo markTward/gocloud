@@ -20,10 +20,10 @@ registry:
     description: Docker Hub
     host: docker.io
     account: marktward
-    repo: gocloud
-    url: docker.io/marktward/gocloud
-    # repo: busybox
-    # url: docker.io/marktward/busybox
+    # repo: gocloud
+    # url: docker.io/marktward/gocloud
+    repo: busybox
+    url: docker.io/marktward/busybox
 
 workflow:
   enabled: true
