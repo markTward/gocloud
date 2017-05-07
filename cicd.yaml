@@ -28,7 +28,7 @@ registry:
 workflow:
   enabled: true
   github:
-    repo: markTward/gocloud-cicd
+    repo: https://github.com/markTward/gocloud-cicd.git
     branch: dev
   ciprovider:
     name: travis
