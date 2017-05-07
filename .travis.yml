@@ -18,12 +18,23 @@ services:
 - docker
 before_install:
 - pwd
-- env | grep -v DOCKER | grep -v GOCLOUD | sort
-- GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
+# bootstrap gocloud-cicd branch to clone
+- pip install pyyaml
+- sudo apt-get update
+- sudo apt-get install -y jq
+- GOCLOUD_CICD_DIR=./external/github.com/marktward/gocloud-cicd
 - mkdir -p $GOCLOUD_CICD_DIR
-# TODO: configure ability to clone commit or branch: git clone -b <branch> <remote_repo>
-- git clone https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
+- GOCLOUD_CICD_CONFIG_DIR=$GOCLOUD_CICD_DIR/travis/docker_push
+- GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
+- GOCLOUD_CICD_REPO=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_FILE | jq -r .workflow.github.repo)
+- GOCLOUD_CICD_BRANCH=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_FILE | jq -r .workflow.github.branch)
+- env | grep -v DOCKER | sort
 install:
+# clone CICD tools, get dependencies and build binaries
+- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
+- go get -d -v $GOCLOUD_CICD_DIR/...
+- go build -o $GOPATH/bin/registry_push $GOCLOUD_CICD_DIR/travis/docker_push/
+# get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
 # install helm
@@ -55,9 +66,8 @@ before_script:
 script:
 - go test -v ./...
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
-- "go build -o $GOPATH/bin/registry_push ./rnd/docker_push/"
 after_success:
-- "sudo $GOPATH/bin/registry_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config ./rnd/docker_push/cicd.yaml --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
+- "sudo $GOPATH/bin/registry_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config $GOCLOUD_CICD_CONFIG_FILE --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts

@@ -20,16 +20,16 @@ registry:
     description: Docker Hub
     host: docker.io
     account: marktward
-    repo: gocloud
-    url: docker.io/marktward/gocloud
-    # repo: busybox
-    # url: docker.io/marktward/busybox
+    # repo: gocloud
+    # url: docker.io/marktward/gocloud
+    repo: busybox
+    url: docker.io/marktward/busybox
 
 workflow:
   enabled: true
   github:
-    repo: markTward/gocloud-cicd
-    branch: master
+    repo: https://github.com/markTward/gocloud-cicd.git
+    branch: dev
   ciprovider:
     name: travis
     plan: A
