@@ -21,12 +21,12 @@ before_install:
 # bootstrap gocloud-cicd branch to clone
 - GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
 - GOCLOUD_CICD_CONFIG_DIR=$GOCLOUD_CICD_DIR/travis/docker_push
-- GOCLOUD_CICD_CONFIG_FILE=cicd.yaml
+- GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - mkdir -p $GOCLOUD_CICD_DIR
 - pip install pyyaml
 - sudo apt-get update
 - sudo apt-get install -y jq
-- export GO_CLOUD_CICD_BRANCH=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_DIR/$GOCLOUD_CICD_CONFIG_FILE | jq -r .workflow.github.branch)
+- export GO_CLOUD_CICD_BRANCH=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_FILE | jq -r .workflow.github.branch)
 - env | grep -v DOCKER | sort
 install:
 - git clone -b $GO_CLOUD_CICD_BRANCH https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
