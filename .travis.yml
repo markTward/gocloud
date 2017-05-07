@@ -19,7 +19,7 @@ services:
 before_install:
 - pwd
 # bootstrap gocloud-cicd branch to clone
-- GOCLOUD_CICD_DIR="external/github.com/marktward/gocloud-cicd"
+- GOCLOUD_CICD_DIR=./external/github.com/marktward/gocloud-cicd
 - GOCLOUD_CICD_CONFIG_DIR=$GOCLOUD_CICD_DIR/travis/docker_push
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - mkdir -p $GOCLOUD_CICD_DIR
@@ -30,6 +30,8 @@ before_install:
 - env | grep -v DOCKER | sort
 install:
 - git clone -b $GO_CLOUD_CICD_BRANCH https://github.com/markTward/gocloud-cicd.git $GOCLOUD_CICD_DIR
+- go get -d -v $GOCLOUD_CICD_DIR/...
+- go build -o $GOPATH/bin/registry_push $GOCLOUD_CICD_DIR/travis/docker_push/
 # DEBUG ONLY!!
 - exit 1
 - go get -d -v ./...
@@ -63,7 +65,6 @@ before_script:
 script:
 - go test -v ./...
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
-- "go build -o $GOPATH/bin/registry_push ./rnd/docker_push/"
 after_success:
 - "sudo $GOPATH/bin/registry_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config ./rnd/docker_push/cicd.yaml --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
 before_deploy:
