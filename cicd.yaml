@@ -41,8 +41,9 @@ workflow:
   # registry: docker
   registry: gcr
   cdprovider:
-    name: helm
-    version: v2.3.1
-    release: gocloud
-    namespace: gocloud
-    chartDir: helm/gocloud/
+    helm:
+      name: helm
+      version: v2.3.1
+      release: gocloud
+      namespace: gocloud
+      chartDir: helm/gocloud/
