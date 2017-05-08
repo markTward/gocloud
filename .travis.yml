@@ -27,6 +27,7 @@ before_install:
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
+- echo $GOCLOUD_CICD_REPO $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_DIR;
 - mkdir -p $GOCLOUD_CICD_DIR
 - env | grep -v DOCKER | sort
 install:
@@ -34,7 +35,6 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - go get -d -v $GOCLOUD_CICD_DIR/...
 - go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
-- echo 'DEBUG';
 - exit 1
 # get project dependencies
 - go get -d -v ./...
