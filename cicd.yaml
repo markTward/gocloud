@@ -29,7 +29,7 @@ workflow:
   enabled: true
   github:
     repo: https://github.com/markTward/gocloud-cicd.git
-    branch: dev
+    branch: master
     clonedir: ./external/github.com/marktward/gocloud-cicd
   ciprovider:
     name: travis
