@@ -14,7 +14,6 @@ env:
   - GCLOUD_PROJECT_ID: k8sdemo-159622
   - GOCLOUD_PROJECT_NAME=gocloud
   - DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
-  - BRANCH_REGEX="^(master$|release//*|pr/.*)"
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
