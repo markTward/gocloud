@@ -39,6 +39,7 @@ workflow:
       name: gke
       project: k8sdemo-159622
       cluster: k0
+      computezone: us-west1-a
   registry: gcr
   cdprovider:
     helm:
@@ -47,3 +48,4 @@ workflow:
       release: gocloud
       namespace: gocloud
       chartDir: helm/gocloud/
+      namespace: gocloud

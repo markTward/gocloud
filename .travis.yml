@@ -5,10 +5,6 @@ go:
 env:
   global:
   - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
-  - CLUSTER_NAME: k0
-  - CLOUDSDK_COMPUTE_ZONE: us-west1-a
-  - GCLOUD_PROJECT_ID: k8sdemo-159622
-  - GOCLOUD_PROJECT_NAME=gocloud
   - DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
 cache:
   directories:
@@ -25,6 +21,7 @@ install:
 # clone CICD tools, get dependencies and build binaries
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
+- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
@@ -36,14 +33,11 @@ install:
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
 # install helm
-- HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.version)
-- echo 'Helm version ==> ' $HELM_VERSION
-- wget "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz"
-- tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
+- GOCLOUD_HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.version)
+- wget "https://storage.googleapis.com/kubernetes-helm/helm-${GOCLOUD_HELM_VERSION}-linux-amd64.tar.gz"
+- tar -xzf "helm-${GOCLOUD_HELM_VERSION}-linux-amd64.tar.gz"
 - sudo mv linux-amd64/helm /usr/local/bin/helm
 - helm version --client
-- echo DEBUG EXIT
-- exit 1
 # install gcloud && kubectl
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
 - sudo gcloud --quiet components install kubectl
@@ -60,16 +54,19 @@ before_script:
 - sudo gcloud auth activate-service-account --key-file client-secret.json
 - sudo gcloud auth list
 # gcloud configurations
-- sudo gcloud config set project $GCLOUD_PROJECT_ID
-- sudo gcloud config set container/cluster $CLUSTER_NAME
-- sudo gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+- GOCLOUD_GKE_CLUSTER=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.cluster)
+- GOCLOUD_GKE_COMPUTE_ZONE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.computezone)
+- GOCLOUD_GKE_PROJECT=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.project)
+- sudo gcloud config set project $GOCLOUD_GKE_PROJECT
+- sudo gcloud config set container/cluster $GOCLOUD_GKE_CLUSTER
+- sudo gcloud config set compute/zone ${GOCLOUD_GKE_COMPUTE_ZONE}
 - sudo gcloud config list
-- sudo gcloud container clusters get-credentials $CLUSTER_NAME
+- sudo gcloud container clusters get-credentials $GOCLOUD_GKE_CLUSTER
 script:
 - go test -v ./...
-- docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
+- docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
-- "sudo $GOPATH/bin/docker_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config $GOCLOUD_CICD_CONFIG_FILE --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
+- "sudo $GOPATH/bin/docker_push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config $GOCLOUD_CICD_CONFIG_FILE --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts
@@ -78,18 +75,16 @@ before_deploy:
 - sudo kubectl get namespaces
 - sudo helm lint --strict --debug helm/gocloud/
 - sudo helm list
-- NAMESPACE=$GOCLOUD_PROJECT_NAME
-# set DOCKER_REPO env var for k8s deployment; forcing to gcr for testing
-# TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-- DOCKER_REPO=gcr.io/$GCLOUD_PROJECT_ID/$GOCLOUD_PROJECT_NAME
+- GOCLOUD_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
+- DOCKER_REPO=gcr.io/$GOCLOUD_GKE_PROJECT/$GOCLOUD_APP_NAME
 deploy:
-  # TODO: add mechanism for helm --dry-run versus deploy
   - provider: script
     on:
       all_branches: true
-    script: $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
+    # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
+    script: $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_NAMESPACE
 after_deploy:
-- sudo kubectl get svc,deploy,pod --namespace=$NAMESPACE
+- sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_NAMESPACE
 - sudo helm list
 notifications:
   email: false
