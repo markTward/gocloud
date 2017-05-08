@@ -5,10 +5,6 @@ go:
 env:
   global:
   - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
-  - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
-  - echo $GOCLOUD_CICD_JSON
-  - HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.version)
-  - echo 'Helm version ==> ' $HELM_VERSION
   - CLUSTER_NAME: k0
   - CLOUDSDK_COMPUTE_ZONE: us-west1-a
   - GCLOUD_PROJECT_ID: k8sdemo-159622
@@ -20,32 +16,34 @@ cache:
 services:
 - docker
 before_install:
-- pwd
-# bootstrap gocloud-cicd clone arguments from cicd.yaml
+# python yaml required for parsing cicd.yaml into json
 - pip install pyyaml
 - sudo apt-get update
 - sudo apt-get install -y jq
+install:
+# bootstrap gocloud-cicd clone arguments from cicd.yaml
+# clone CICD tools, get dependencies and build binaries
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
 - mkdir -p $GOCLOUD_CICD_DIR
-- env | grep -v DOCKER | sort
-install:
-# clone CICD tools, get dependencies and build binaries
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - go get -d -v $GOCLOUD_CICD_DIR/...
 - go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
-- exit 1
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
 # install helm
+- HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.version)
+- echo 'Helm version ==> ' $HELM_VERSION
 - wget "https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - tar -xzf "helm-${HELM_VERSION}-linux-amd64.tar.gz"
 - sudo mv linux-amd64/helm /usr/local/bin/helm
 - helm version --client
+- echo DEBUG EXIT
+- exit 1
 # install gcloud && kubectl
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
 - sudo gcloud --quiet components install kubectl

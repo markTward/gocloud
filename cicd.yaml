@@ -35,10 +35,10 @@ workflow:
     name: travis
     plan: A
   platform:
-    name: gke
-    project: k8sdemo-159622
-    cluster: k0
-  # registry: docker
+    gke:
+      name: gke
+      project: k8sdemo-159622
+      cluster: k0
   registry: gcr
   cdprovider:
     helm:
