@@ -21,7 +21,9 @@ spec:
     spec:
       containers:
       - name: gocloud-be
-        image: {{ .Values.service.gocloudGrpc.image.repository}}:{{.Values.service.gocloudGrpc.image.tag }}
+        # BUG: helm converts all numeric commit tag to floating point! hacky workaround by forcing string from https://github.com/kubernetes/helm/issues/1707
+        # image: {{ .Values.service.gocloudGrpc.image.repository}}:{{.Values.service.gocloudGrpc.image.tag}}
+        image: {{ .Values.service.gocloudGrpc.image.repository}}:{{.Values.service.gocloudGrpc.image.tag | replace ":" "" }}
         imagePullPolicy: {{ .Values.service.gocloudGrpc.image.pullPolicy}}
         ports:
         - containerPort: {{ .Values.service.gocloudGrpc.ports.containerPort }}
