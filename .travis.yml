@@ -83,7 +83,7 @@ deploy:
     on:
       all_branches: true
     # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-    script: $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_HELM_NAMESPACE $GOCLOUD_HELM_CHARTPATH
+    script: sudo $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_HELM_NAMESPACE $GOCLOUD_HELM_CHARTPATH
 after_deploy:
 - sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_HELM_NAMESPACE
 - sudo helm list
