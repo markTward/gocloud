@@ -34,7 +34,7 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - go get -d -v $GOCLOUD_CICD_DIR/...
 - go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
-- echo "DEBUG: exiting after gocloud-cicd cloning";
+- echo 'DEBUG';
 - exit 1
 # get project dependencies
 - go get -d -v ./...
