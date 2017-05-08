@@ -4,10 +4,11 @@ go:
 - 1.8.x
 env:
   global:
-  # - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
-  # - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
-  # - HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.version)
-  # - echo Helm version $HELM_VERSION
+  - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
+  - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
+  - echo $GOCLOUD_CICD_JSON
+  - HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.version)
+  - echo 'Helm version ==> ' $HELM_VERSION
   - CLUSTER_NAME: k0
   - CLOUDSDK_COMPUTE_ZONE: us-west1-a
   - GCLOUD_PROJECT_ID: k8sdemo-159622
@@ -37,14 +38,6 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - go get -d -v $GOCLOUD_CICD_DIR/...
 - go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
-- echo 'DEbug_no_semi_colon'
-- echo 'DEBUG force stop';
-- echo DEBUG no quotes or semi\-colon but backslash dasy
-- echo $GOCLOUD_CICD_REPO;
-- echo 'git repo single quote and env var spaces' $GOCLOUD_CICD_REPO
-- echo "git repo double quote $GOCLOUD_CICD_REPO"
-- echo git repo no quote $GOCLOUD_CICD_REPO
-- echo special colon must be quoted and redirects characters with backslash ==\> ":"
 - exit 1
 # get project dependencies
 - go get -d -v ./...
