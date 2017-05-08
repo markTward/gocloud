@@ -37,7 +37,11 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - go get -d -v $GOCLOUD_CICD_DIR/...
 - go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
+- echo 'DEbug_no_semi_colon'
 - echo 'DEBUG force stop';
+- echo $GOCLOUD_CICD_REPO;
+- echo 'git repo single quote and env var spaces' $GOCLOUD_CICD_REPO
+- echo "git repo double quote $GOCLOUD_CICD_REPO"
 - exit 1
 # get project dependencies
 - go get -d -v ./...
