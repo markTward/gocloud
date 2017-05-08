@@ -47,5 +47,5 @@ workflow:
       version: v2.3.1
       release: gocloud
       namespace: gocloud
-      chartDir: helm/gocloud/
+      chartpath: helm/gocloud/
       namespace: gocloud

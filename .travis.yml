@@ -75,16 +75,17 @@ before_deploy:
 - sudo kubectl get namespaces
 - sudo helm lint --strict --debug helm/gocloud/
 - sudo helm list
-- GOCLOUD_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
+- GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
+- GOCLOUD_HELM_CHARTPATH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.chartpath)
 - DOCKER_REPO=gcr.io/$GOCLOUD_GKE_PROJECT/$GOCLOUD_APP_NAME
 deploy:
   - provider: script
     on:
       all_branches: true
     # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-    script: $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_NAMESPACE
+    script: $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_HELM_NAMESPACE $GOCLOUD_HELM_CHARTPATH
 after_deploy:
-- sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_NAMESPACE
+- sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_HELM_NAMESPACE
 - sudo helm list
 notifications:
   email: false
