@@ -12,35 +12,36 @@ registry:
     project: k8sdemo-159622
     repo: gocloud
     url: gcr.io/k8sdemo-159622/gocloud
-    # repo: busybox
-    # url: gcr.io/k8sdemo-159622/busybox
     keyfile: ./client-secret.json
   dockerregistry:
     name: docker
     description: Docker Hub
     host: docker.io
     account: marktward
-    # repo: gocloud
-    # url: docker.io/marktward/gocloud
-    repo: busybox
-    url: docker.io/marktward/busybox
+    repo: gocloud
+    url: docker.io/marktward/gocloud
 
 workflow:
   enabled: true
   github:
     repo: https://github.com/markTward/gocloud-cicd.git
-    branch: dev
+    branch: master
+    clonedir: ./external/github.com/marktward/gocloud-cicd
   ciprovider:
     name: travis
     plan: A
   platform:
-    name: gke
-    project: k8sdemo-159622
-    cluster: k0
-  # registry: docker
+    gke:
+      name: gke
+      project: k8sdemo-159622
+      cluster: k0
+      computezone: us-west1-a
   registry: gcr
   cdprovider:
-    name: helm
-    release: gocloud
-    namespace: gocloud
-    chartDir: helm/gocloud/
+    helm:
+      name: helm
+      version: v2.4.1
+      release: gocloud
+      namespace: gocloud
+      chartpath: helm/gocloud/
+      namespace: gocloud
