@@ -39,9 +39,12 @@ install:
 - go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
 - echo 'DEbug_no_semi_colon'
 - echo 'DEBUG force stop';
+- echo DEBUG no quotes or semi\-colon but backslash dasy
 - echo $GOCLOUD_CICD_REPO;
 - echo 'git repo single quote and env var spaces' $GOCLOUD_CICD_REPO
 - echo "git repo double quote $GOCLOUD_CICD_REPO"
+- echo git repo no quote $GOCLOUD_CICD_REPO
+- echo special colon must be quoted and redirects characters with backslash ==\> ":"
 - exit 1
 # get project dependencies
 - go get -d -v ./...
