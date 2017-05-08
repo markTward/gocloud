@@ -33,7 +33,7 @@ install:
 # clone CICD tools, get dependencies and build binaries
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - go get -d -v $GOCLOUD_CICD_DIR/...
-- go build -o $GOPATH/bin/registry_push $GOCLOUD_CICD_DIR/travis/docker_push/
+- go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -67,14 +67,14 @@ script:
 - go test -v ./...
 - docker build -t $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
-- "sudo $GOPATH/bin/registry_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config $GOCLOUD_CICD_CONFIG_FILE --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
+- "sudo $GOPATH/bin/docker_push --image $GOCLOUD_PROJECT_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config $GOCLOUD_CICD_CONFIG_FILE --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts
 # helm / k8s state before deploy
 # BUG: helm fails to obtain k8s cluster access token; must run kubectl command first
 - sudo kubectl get namespaces
-- sudo helm lint --strict --debug deploy/helm/gocloud/
+- sudo helm lint --strict --debug helm/gocloud/
 - sudo helm list
 - NAMESPACE=$GOCLOUD_PROJECT_NAME
 # set DOCKER_REPO env var for k8s deployment; forcing to gcr for testing
@@ -85,7 +85,7 @@ deploy:
   - provider: script
     on:
       all_branches: true
-    script: deploy/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
+    script: $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG gocloud-$TRAVIS_BRANCH LIVE $NAMESPACE
 after_deploy:
 - sudo kubectl get svc,deploy,pod --namespace=$NAMESPACE
 - sudo helm list

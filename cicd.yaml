@@ -43,4 +43,4 @@ workflow:
     name: helm
     release: gocloud
     namespace: gocloud
-    chartDir: deploy/travis/gocloud
+    chartDir: helm/gocloud/
