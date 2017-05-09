@@ -45,4 +45,3 @@ workflow:
       release: gocloud
       namespace: gocloud
       chartpath: helm/gocloud/
-      namespace: gocloud
