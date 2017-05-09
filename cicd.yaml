@@ -36,6 +36,7 @@ workflow:
       project: k8sdemo-159622
       cluster: k0
       computezone: us-west1-a
+      keyfile: ./client-secret.json
   registry: gcr
   cdprovider:
     helm:
