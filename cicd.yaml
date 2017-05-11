@@ -5,19 +5,21 @@ github:
   repo: markTward/gocloud
 
 registry:
-  Name: gcr
-  Description: Google Container Registry
-  Host: gcr.io
-  Project: k8sdemo-159622
-  Repo: gocloud
-  Url: gcr.io/k8sdemo-159622/gocloud
-  Keyfile: ./client-secret.json
-  # Name: docker
-  # Description: Docker Hub
-  # Host: docker.io
-  # Account: marktward
-  # Repo: gocloud
-  # Url: docker.io/marktward/gocloud
+  gcrregistry:
+    name: gcr
+    description: Google Container Registry
+    host: gcr.io
+    project: k8sdemo-159622
+    repo: gocloud
+    url: gcr.io/k8sdemo-159622/gocloud
+    keyfile: ./client-secret.json
+  dockerregistry:
+    name: docker
+    description: Docker Hub
+    host: docker.io
+    account: marktward
+    repo: gocloud
+    url: docker.io/marktward/gocloud
 
 workflow:
   enabled: true
@@ -28,6 +30,7 @@ workflow:
   ciprovider:
     name: travis
     plan: A
+  registry: gcr
   platform:
     gke:
       name: gke
