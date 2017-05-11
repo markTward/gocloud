@@ -21,6 +21,18 @@ before_install:
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
 install:
+# clone CICD tools, get dependencies and build binaries
+- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
+- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
+- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
+- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
+- echo $GOCLOUD_CICD_DIR
+- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
+- cd $GOCLOUD_CICD_DIR && pwd
+- ls -la
+- go get -d -v ./...
+- go build -o $GOPATH/bin/docker_push ./travis/docker_push
+- cd $TRAVIS_BUILD_DIR
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -39,20 +51,6 @@ install:
 - which kubectl || true
 - gcloud version
 - kubectl version --client=true || true
- bootstrap gocloud-cicd clone arguments from cicd.yaml
-# clone CICD tools, get dependencies and build binaries
-- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
-- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
-- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
-- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
-- echo $GOCLOUD_CICD_DIR
-- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
-- cd $GOCLOUD_CICD_DIR
-- ls -la /home/travis/gopath/src/github.com/markTward/gocloud-cicd/travis/docker_push/config
-- pwd
-- go get -d -v ./...
-- go build -o $GOPATH/bin/docker_push ./travis/docker_push
-- cd $TRAVIS_BUILD_DIR
 before_script:
 # decrypt gcloud service account credentials
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
