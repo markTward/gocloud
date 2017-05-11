@@ -11,7 +11,7 @@ cache:
     - "$HOME/google-cloud-sdk/"
 services:
 - docker
-before_install
+before_install:
 - echo PWD at start $(pwd)
 # python yaml required for parsing cicd.yaml into json
 - pip install pyyaml
