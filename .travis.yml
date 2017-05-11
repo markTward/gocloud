@@ -80,7 +80,7 @@ before_deploy:
 - GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
 - GOCLOUD_HELM_CHARTPATH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.chartpath)
 # BUG: won't be able to dynamically select DOCKER_REPO until built into deploy script and driven by config
-- DOCKER_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .registry.gcrregistry.url)
+- DOCKER_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .registry.gcr.url)
 deploy:
   - provider: script
     on:
