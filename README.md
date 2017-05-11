@@ -2,10 +2,8 @@
 travis deploy using custom scripts: https://docs.travis-ci.com/user/deployment/script
 travis + gcp: https://cloud.google.com/solutions/continuous-delivery-with-travis-ci
 Split apart grpc and restapi into different repos/services  
-Helm deployment to k8s added
 Makefile for docker/deploy scripts
 glide install
-add config values for gocloud-cicd deploy scripts
 Test docker images as part of CI/CD  
 go get -d fails to download github.com/stretchr/testify/assert in test file -- why?  
 Add --log-level option cmds  

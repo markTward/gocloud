@@ -16,19 +16,10 @@ before_install:
 - pip install pyyaml
 - sudo apt-get update
 - sudo apt-get install -y jq
-install:
-# bootstrap gocloud-cicd clone arguments from cicd.yaml
-# clone CICD tools, get dependencies and build binaries
+# parse cicd config as json for setting of install env vars
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
-- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
-- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
-- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
-- GOCLOUD_CICD_DIR=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
-- mkdir -p $GOCLOUD_CICD_DIR
-- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
-- go get -d -v $GOCLOUD_CICD_DIR/...
-- go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
+install:
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -47,16 +38,27 @@ install:
 - which kubectl || true
 - gcloud version
 - kubectl version --client=true || true
+# clone CICD tools, get dependencies and build binaries
+- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
+- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
+- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
+- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
+- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
+- cd $GOCLOUD_CICD_DIR && pwd && ls -la
+- go get -d -v ./...
+- go build -o $GOPATH/bin/docker_push ./travis/docker_push
+- cd $TRAVIS_BUILD_DIR
 before_script:
-# gcloud service account credentials
+# decrypt gcloud service account credentials
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
 - tar -xzf credentials.tar.gz
-- sudo gcloud auth activate-service-account --key-file client-secret.json
-- sudo gcloud auth list
-# gcloud configurations
+# gcloud auth and config
 - GOCLOUD_GKE_CLUSTER=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.cluster)
 - GOCLOUD_GKE_COMPUTE_ZONE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.computezone)
 - GOCLOUD_GKE_PROJECT=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.project)
+- GOCLOUD_GKE_KEY_FILE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.platform.gke.keyfile)
+- sudo gcloud auth activate-service-account --key-file $GOCLOUD_GKE_KEY_FILE
+- sudo gcloud auth list
 - sudo gcloud config set project $GOCLOUD_GKE_PROJECT
 - sudo gcloud config set container/cluster $GOCLOUD_GKE_CLUSTER
 - sudo gcloud config set compute/zone ${GOCLOUD_GKE_COMPUTE_ZONE}
@@ -77,7 +79,8 @@ before_deploy:
 - sudo helm list
 - GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
 - GOCLOUD_HELM_CHARTPATH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.chartpath)
-- DOCKER_REPO=gcr.io/$GOCLOUD_GKE_PROJECT/$GOCLOUD_APP_NAME
+# BUG: won't be able to dynamically select DOCKER_REPO until built into deploy script and driven by config
+- DOCKER_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .registry.gcr.url)
 deploy:
   - provider: script
     on:

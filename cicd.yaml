@@ -5,7 +5,7 @@ github:
   repo: markTward/gocloud
 
 registry:
-  gcrregistry:
+  gcr:
     name: gcr
     description: Google Container Registry
     host: gcr.io
@@ -13,7 +13,7 @@ registry:
     repo: gocloud
     url: gcr.io/k8sdemo-159622/gocloud
     keyfile: ./client-secret.json
-  dockerregistry:
+  docker:
     name: docker
     description: Docker Hub
     host: docker.io
@@ -26,17 +26,18 @@ workflow:
   github:
     repo: https://github.com/markTward/gocloud-cicd.git
     branch: master
-    clonedir: ./external/github.com/marktward/gocloud-cicd
+    clonedir: github.com/markTward/gocloud-cicd
   ciprovider:
     name: travis
     plan: A
+  registry: gcr
   platform:
     gke:
       name: gke
       project: k8sdemo-159622
       cluster: k0
       computezone: us-west1-a
-  registry: gcr
+      keyfile: ./client-secret.json
   cdprovider:
     helm:
       name: helm
@@ -44,4 +45,3 @@ workflow:
       release: gocloud
       namespace: gocloud
       chartpath: helm/gocloud/
-      namespace: gocloud
