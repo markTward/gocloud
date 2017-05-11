@@ -24,7 +24,7 @@ workflow:
   github:
     repo: https://github.com/markTward/gocloud-cicd.git
     branch: cfg
-    clonedir: github.com/marktward/gocloud-cicd
+    clonedir: github.com/markTward/gocloud-cicd
   ciprovider:
     name: travis
     plan: A
