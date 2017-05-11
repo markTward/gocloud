@@ -26,12 +26,8 @@ install:
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
-- echo $GOCLOUD_CICD_DIR
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
-- cd $GOCLOUD_CICD_DIR && pwd
-- ls -la
-- cd $GOCLOUD_CICD_DIR/travis/docker_push && pwd || true
-- ls -la /home/travis/gopath/src/github.com/markTward/gocloud-cicd/travis/docker_push/config || true
+- cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
 - go build -o $GOPATH/bin/docker_push ./travis/docker_push
 - cd $TRAVIS_BUILD_DIR
