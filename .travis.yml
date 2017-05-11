@@ -11,7 +11,8 @@ cache:
     - "$HOME/google-cloud-sdk/"
 services:
 - docker
-before_install:
+before_install
+- echo PWD at start $(pwd)
 # python yaml required for parsing cicd.yaml into json
 - pip install pyyaml
 - sudo apt-get update
@@ -25,10 +26,12 @@ install:
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
-- mkdir -p $GOCLOUD_CICD_DIR
-- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
-- go get -d -v $GOCLOUD_CICD_DIR/...
-- go build -o $GOPATH/bin/docker_push $GOCLOUD_CICD_DIR/travis/docker_push/
+# - mkdir -p $GOCLOUD_CICD_DIR
+- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOPATH/src/$GOCLOUD_CICD_DIR
+- cd $GOPATH/src/$GOCLOUD_CICD_DIR
+- go get -d -v ./...
+- go build -o $GOPATH/bin/docker_push ./travis/docker_push
+- cd $HOME
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
