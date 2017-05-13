@@ -50,4 +50,4 @@ workflow:
           - debug
           - dryrun
         values:
-          - ../gocloud/helm/runtime_values.yaml
+          - ../gocloud/helm/runtime_values.tpl
