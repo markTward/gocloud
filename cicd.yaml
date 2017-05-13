@@ -46,8 +46,9 @@ workflow:
       namespace: gocloud
       chartpath: helm/gocloud/
       options:
+        # only boolean for now
         flags:
-          - debug
-          - dryrun
+          - --debug
+          # - --dry-run
         values:
           - ../gocloud/helm/runtime_values.tpl
