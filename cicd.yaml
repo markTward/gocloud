@@ -45,3 +45,9 @@ workflow:
       release: gocloud
       namespace: gocloud
       chartpath: helm/gocloud/
+      options:
+        flags:
+          - debug
+          - dryrun
+        values:
+          - ../gocloud/helm/runtime_values.yaml
