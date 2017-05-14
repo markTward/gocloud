@@ -46,9 +46,10 @@ workflow:
       namespace: gocloud
       chartpath: helm/gocloud/
       options:
-        # only boolean for now
+        # force / override cli flags on helm upgrade ...
         flags:
-          - --debug
+          # - --debug
           # - --dry-run
         values:
-          - ../gocloud/helm/runtime_values.tpl
+          template: ./helm/runtime_values.tpl
+          # output: ./runtime_values.yaml

@@ -46,7 +46,7 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
-- go build -o $GOPATH/bin/docker_push ./travis/docker_push
+- go build -o $GOPATH/bin/cicd .
 - cd $TRAVIS_BUILD_DIR
 before_script:
 # decrypt gcloud service account credentials
@@ -86,7 +86,8 @@ deploy:
     on:
       all_branches: true
     # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-    script: sudo $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_HELM_NAMESPACE $GOCLOUD_HELM_CHARTPATH
+    # script: sudo $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_HELM_NAMESPACE $GOCLOUD_HELM_CHARTPATH
+    script: sudo cicd deploy --debug -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
 after_deploy:
 - sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_HELM_NAMESPACE
 - sudo helm list
