@@ -30,6 +30,7 @@ install:
 - sudo mv linux-amd64/helm /usr/local/bin/helm
 - helm version --client
 # install gcloud && kubectl
+# TODO: install google-cloud-sdk from archive
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
 - sudo gcloud --quiet components install kubectl
 - sudo gcloud --quiet components update
@@ -78,20 +79,15 @@ before_deploy:
 - sudo kubectl get namespaces
 - sudo helm lint --strict --debug helm/gocloud/
 - sudo helm list
-- GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
-- GOCLOUD_HELM_CHARTPATH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.chartpath)
-# BUG: won't be able to dynamically select DOCKER_REPO until built into deploy script and driven by config
-- DOCKER_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .registry.gcr.url)
 - env | grep -v DOCKER | sort
 
 deploy:
   - provider: script
     on:
       all_branches: true
-    # TODO: integrate with forthcoming go-based deployment script; derived from cicd.yaml
-    # script: sudo $GOCLOUD_CICD_DIR/travis/deploy_k8s.sh $DOCKER_REPO $DOCKER_COMMIT_TAG $GOCLOUD_APP_NAME-$TRAVIS_BRANCH LIVE $GOCLOUD_HELM_NAMESPACE $GOCLOUD_HELM_CHARTPATH
-    script: pwd && ls -la ./helm && sudo $GOPATH/bin/cicd --debug deploy -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
+    script: sudo $GOPATH/bin/cicd --debug deploy -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
 after_deploy:
+- GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
 - sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_HELM_NAMESPACE
 - sudo helm list
 notifications:
