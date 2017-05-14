@@ -69,8 +69,8 @@ script:
 - go test -v ./...
 - docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
-# - "sudo $GOPATH/bin/docker_push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --config $GOCLOUD_CICD_CONFIG_FILE --event $TRAVIS_EVENT_TYPE --tag $DOCKER_COMMIT_TAG --pr $TRAVIS_PULL_REQUEST"
-- sudo $GOPATH/bin/cicd --debug push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE
+- if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then GOCLOUD_PULL_REQUEST="--pr $TRAVIS_PULL_REQUEST"; fi
+- sudo $GOPATH/bin/cicd --debug push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE $GOCLOUD_PULL_REQUEST
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts
