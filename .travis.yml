@@ -47,7 +47,7 @@ install:
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
 - go build -o $GOPATH/bin/cicd .
-- cd $TRAVIS_BUILD_DIR
+- cd $TRAVIS_BUILD_DIR && pwd && ls -la
 before_script:
 # decrypt gcloud service account credentials
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
@@ -81,6 +81,7 @@ before_deploy:
 - GOCLOUD_HELM_CHARTPATH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.chartpath)
 # BUG: won't be able to dynamically select DOCKER_REPO until built into deploy script and driven by config
 - DOCKER_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .registry.gcr.url)
+- pwd && ls -la && env | sort
 deploy:
   - provider: script
     on:
