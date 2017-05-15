@@ -44,7 +44,7 @@ install:
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
-- if [ "$GOCLOUD_CICD_BRANCH" == "" ]; then $GOCLOUD_CICD_BRANCH=$TRAVIS_BRANCH ; fi
+- if [ -z "$GOCLOUD_CICD_BRANCH" ]; then GOCLOUD_CICD_BRANCH=$TRAVIS_BRANCH ; fi
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
