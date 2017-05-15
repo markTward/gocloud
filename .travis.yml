@@ -19,7 +19,7 @@ before_install:
 # parse cicd config as json for setting of install env vars
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
-- env | sort
+install:
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
@@ -44,10 +44,6 @@ before_install:
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
-- echo GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_BRANCH
-- echo TRAVIS_BRANCH $TRAVIS_BRANCH
-- echo GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_BRANCH
-- if [ -z "$GOCLOUD_CICD_BRANCH" ] || [ "$GOCLOUD_CICD_BRANCH" = "null" ]; then GOCLOUD_CICD_BRANCH=$TRAVIS_BRANCH ; fi
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
