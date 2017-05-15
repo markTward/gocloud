@@ -19,6 +19,7 @@ before_install:
 # parse cicd config as json for setting of install env vars
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
 - GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
+- env | grep DOCKER | sort
 install:
 # get project dependencies
 - go get -d -v ./...
@@ -44,7 +45,10 @@ install:
 - GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.repo)
 - GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.branch)
 - GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.github.clonedir)
+- echo GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_BRANCH
+- echo TRAVIS_BRANCH $TRAVIS_BRANCH
 - if [ -z "$GOCLOUD_CICD_BRANCH" ]; then GOCLOUD_CICD_BRANCH=$TRAVIS_BRANCH ; fi
+- echo GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_BRANCH
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
