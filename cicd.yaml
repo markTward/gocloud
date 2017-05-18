@@ -1,7 +1,12 @@
+config:
+  enabled: true
+  provider:
+    registry: gcr
+    ci: travis
+    cd: helm
+
 app:
   name: gocloud
-
-github:
   repo: markTward/gocloud
 
 registry:
@@ -23,12 +28,7 @@ registry:
     repo: gocloud
     url: docker.io/marktward/gocloud
 
-workflow:
-  enabled: true
-  provider:
-    registry: gcr
-    ci: travis
-    cd: helm
+providers:
   github:
     repo: https://github.com/markTward/gocloud-cicd.git
     branch: reorg
