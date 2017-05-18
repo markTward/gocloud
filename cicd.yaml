@@ -9,31 +9,12 @@ app:
   name: gocloud
   repo: markTward/gocloud
 
-registry:
-  gcr:
-    name: gcr
-    enabled: true
-    description: Google Container Registry
-    host: gcr.io
-    project: k8sdemo-159622
-    repo: gocloud
-    url: gcr.io/k8sdemo-159622/gocloud
-    keyfile: ./client-secret.json
-  docker:
-    name: docker
-    enabled: true
-    description: Docker Hub
-    host: docker.io
-    account: marktward
-    repo: gocloud
-    url: docker.io/marktward/gocloud
-
-providers:
-  github:
+provider:
+  cicd:
     repo: https://github.com/markTward/gocloud-cicd.git
     branch: reorg
     clonedir: github.com/markTward/gocloud-cicd
-  ciprovider:
+  ci:
     travis:
       name: travis
       enabled: true
@@ -46,7 +27,7 @@ providers:
       cluster: k0
       computezone: us-west1-a
       keyfile: ./client-secret.json
-  cdprovider:
+  cd:
     helm:
       name: helm
       enabled: true
@@ -62,3 +43,21 @@ providers:
         values:
           template: ./helm/runtime_values.tpl
           # output: ./runtime_values.yaml
+  registry:
+    gcr:
+      name: gcr
+      enabled: true
+      description: Google Container Registry
+      host: gcr.io
+      project: k8sdemo-159622
+      repo: gocloud
+      url: gcr.io/k8sdemo-159622/gocloud
+      keyfile: ./client-secret.json
+    docker:
+      name: docker
+      enabled: true
+      description: Docker Hub
+      host: docker.io
+      account: marktward
+      repo: gocloud
+      url: docker.io/marktward/gocloud
