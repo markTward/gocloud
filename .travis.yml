@@ -48,6 +48,7 @@ install:
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
 - go install cmd
+- cicd --version
 - cd $TRAVIS_BUILD_DIR
 before_script:
 # decrypt gcloud service account credentials
