@@ -31,7 +31,7 @@ workflow:
     cd: helm
   github:
     repo: https://github.com/markTward/gocloud-cicd.git
-    branch: dev
+    branch: reorg
     clonedir: github.com/markTward/gocloud-cicd
   ciprovider:
     travis:
