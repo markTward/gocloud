@@ -41,9 +41,9 @@ install:
 - kubectl version --client=true || true
 # clone CICD tools, get dependencies and build binaries
 - GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
-- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r ..provider.cicd.repo)
-- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r ..provider.cicd.branch)
-- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r ..provider.cicd.clonedir)
+- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.repo)
+- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.branch)
+- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.clonedir)
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
