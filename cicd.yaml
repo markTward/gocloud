@@ -57,7 +57,7 @@ workflow:
       options:
         # force cli flags on cicd {deploy,push}, aka helm upgrade ...
         flags:
-          # - --debug
+          - --debug
           # - --dry-run
         values:
           template: ./helm/runtime_values.tpl
