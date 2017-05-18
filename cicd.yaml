@@ -55,7 +55,7 @@ workflow:
       namespace: gocloud
       chartpath: helm/gocloud/
       options:
-        # force / override cli flags on helm upgrade ...
+        # force cli flags on cicd {deploy,push}, aka helm upgrade ...
         flags:
           # - --debug
           # - --dry-run

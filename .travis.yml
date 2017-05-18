@@ -70,7 +70,7 @@ script:
 - docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
 - if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then GOCLOUD_PULL_REQUEST="--pr $TRAVIS_PULL_REQUEST"; fi
-- sudo $GOPATH/bin/cicd --debug push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE $GOCLOUD_PULL_REQUEST
+- sudo $GOPATH/bin/cicd push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE $GOCLOUD_PULL_REQUEST
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts
@@ -85,7 +85,7 @@ deploy:
   - provider: script
     on:
       all_branches: true
-    script: sudo $GOPATH/bin/cicd --debug deploy -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
+    script: sudo $GOPATH/bin/cicd deploy -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
 after_deploy:
 - GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .workflow.cdprovider.helm.namespace)
 - sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_HELM_NAMESPACE
