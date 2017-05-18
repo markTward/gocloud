@@ -47,7 +47,7 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
-- go build cmd
+- go install cmd
 - cd $TRAVIS_BUILD_DIR
 before_script:
 # decrypt gcloud service account credentials
