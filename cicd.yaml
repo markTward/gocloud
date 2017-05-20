@@ -1,7 +1,7 @@
 config:
   enabled: true
   debug: true
-  dryrun: true
+  # dryrun: true
   provider:
     registry:
       id: gcr
