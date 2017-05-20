@@ -1,5 +1,7 @@
 config:
   enabled: true
+  debug: true
+  dryrun: true
   provider:
     registry:
       id: gcr
@@ -41,14 +43,9 @@ provider:
       release: gocloud
       namespace: gocloud
       chartpath: helm/gocloud/
-      options:
-        # force cli flags on cicd {deploy,push}, aka helm upgrade ...
-        flags:
-          - --debug
-          # - --dry-run
-        values:
-          template: ./helm/runtime_values.tpl
-          # output: ./runtime_values.yaml
+      values:
+        template: ./helm/runtime_values.tpl
+        # output: ./runtime_values.yaml
   registry:
     gcr:
       name: gcr
