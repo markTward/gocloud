@@ -2,8 +2,8 @@ service:
   gocloudAPI:
     image:
       repository: {{.Repo}}
-      tag: {{.Tag}}
+      tag: :{{.Tag}}
   gocloudGrpc:
     image:
       repository: {{.Repo}}
-      tag: {{.Tag}}
+      tag: :{{.Tag}}
