@@ -1,6 +1,6 @@
 config:
   enabled: true
-  debug: true
+  debug: false
   dryrun: false
   provider:
     registry:
@@ -23,7 +23,7 @@ app:
 provider:
   cicd:
     repo: https://github.com/markTward/gocloud-cicd.git
-    branch: cobra
+    branch: master
     clonedir: github.com/markTward/gocloud-cicd
   ci:
     travis:
