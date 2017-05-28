@@ -47,8 +47,7 @@ install:
 - git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
 - cd $GOCLOUD_CICD_DIR && pwd && ls -la
 - go get -d -v ./...
-- go install ./cmd/cicd
-- cicd --version
+- go install .
 - cd $TRAVIS_BUILD_DIR
 before_script:
 # decrypt gcloud service account credentials
@@ -71,7 +70,7 @@ script:
 - docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
 - if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then GOCLOUD_PULL_REQUEST="--pr $TRAVIS_PULL_REQUEST"; fi
-- sudo $GOPATH/bin/cicd push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE $GOCLOUD_PULL_REQUEST
+- sudo $GOPATH/bin/gocloud-cicd push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE $GOCLOUD_PULL_REQUEST
 before_deploy:
 # show k8s context
 - sudo kubectl config get-contexts
@@ -86,7 +85,7 @@ deploy:
   - provider: script
     on:
       all_branches: true
-    script: sudo $GOPATH/bin/cicd deploy -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
+    script: sudo $GOPATH/bin/gocloud-cicd deploy -t $DOCKER_COMMIT_TAG -b $TRAVIS_BRANCH
 after_deploy:
 - GOCLOUD_HELM_NAMESPACE=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cd.helm.namespace)
 - sudo kubectl get svc,deploy,pod --namespace=$GOCLOUD_HELM_NAMESPACE
