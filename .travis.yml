@@ -2,10 +2,6 @@ language: go
 sudo: required
 go:
 - 1.8.x
-env:
-  global:
-  - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
-  - DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
@@ -18,11 +14,22 @@ before_install:
 - sudo apt-get install -y jq
 # parse cicd config as json for setting of install env vars
 - GOCLOUD_CICD_CONFIG_FILE=./cicd.yaml
-- GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < ./cicd.yaml)
+- GOCLOUD_CICD_JSON=$(python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' < $GOCLOUD_CICD_CONFIG_FILE)
 install:
 # get project dependencies
 - go get -d -v ./...
 - go get -d -v github.com/stretchr/testify/assert
+# clone CICD tools, get dependencies and install binary
+- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
+- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.repo)
+- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.branch)
+- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.clonedir)
+- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
+- cd $GOCLOUD_CICD_DIR && pwd && ls -la
+- go get -d -v ./...
+- go install .
+- cd $TRAVIS_BUILD_DIR
+# TODO: install provider dependencies; gocloud-cicd provider install cd && gocloud-cicd provider install platform gke
 # install helm
 - GOCLOUD_HELM_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cd.helm.version)
 - wget "https://storage.googleapis.com/kubernetes-helm/helm-${GOCLOUD_HELM_VERSION}-linux-amd64.tar.gz"
@@ -39,20 +46,11 @@ install:
 - which kubectl || true
 - gcloud version
 - kubectl version --client=true || true
-# clone CICD tools, get dependencies and build binaries
-- GOCLOUD_APP_NAME=$(echo $GOCLOUD_CICD_JSON | jq -r .app.name)
-- GOCLOUD_CICD_REPO=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.repo)
-- GOCLOUD_CICD_BRANCH=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.branch)
-- GOCLOUD_CICD_DIR=$GOPATH/src/$(echo $GOCLOUD_CICD_JSON | jq -r .provider.cicd.clonedir)
-- git clone -b $GOCLOUD_CICD_BRANCH $GOCLOUD_CICD_REPO $GOCLOUD_CICD_DIR
-- cd $GOCLOUD_CICD_DIR && pwd && ls -la
-- go get -d -v ./...
-- go install .
-- cd $TRAVIS_BUILD_DIR
 before_script:
-# decrypt gcloud service account credentials
+# decrypt credentials
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
 - tar -xzf credentials.tar.gz
+# TODO: authenticate and configure platform provider; gocloud-cicd provider authenticate gke && gocloud-cicd provider config gke
 # gcloud auth and config
 - GOCLOUD_GKE_CLUSTER=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.platform.gke.cluster)
 - GOCLOUD_GKE_COMPUTE_ZONE=$(echo $GOCLOUD_CICD_JSON | jq -r .provider.platform.gke.computezone)
@@ -67,8 +65,10 @@ before_script:
 - sudo gcloud container clusters get-credentials $GOCLOUD_GKE_CLUSTER
 script:
 - go test -v ./...
-- docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 after_success:
+# TODO: move build to Makefile; Dockerfile a configurable element
+- DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
+- docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 - if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then GOCLOUD_PULL_REQUEST="--pr $TRAVIS_PULL_REQUEST"; fi
 - sudo $GOPATH/bin/gocloud-cicd push --image $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG --branch $TRAVIS_BRANCH --event $TRAVIS_EVENT_TYPE $GOCLOUD_PULL_REQUEST
 before_deploy:
