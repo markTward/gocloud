@@ -4,7 +4,7 @@ config:
   dryrun: false
   provider:
     registry:
-      id: gcr
+      id: docker
       enabled: true
     ci:
       id: travis
@@ -36,12 +36,16 @@ provider:
           - curl
           - python2.7
   platform:
+    minikube:
+      name: minikube
+      context: minikube
     gke:
       name: gke
       project: k8sdemo-159622
       cluster: k0
       computezone: us-west1-a
       keyfile: ./client-secret.json
+      context: gke_k8sdemo-159622_us-west1-a_k0
       requirements:
         linux:
           - gcloud:
@@ -52,10 +56,10 @@ provider:
               name: kubectl
               version: v1.6.4
               url: curl -LO https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl
+
   cd:
     helm:
       name: helm
-      // TODO: retire top-level version once install requirements cmd ready
       version: v2.4.2
       release: gocloud
       namespace: gocloud
@@ -63,12 +67,17 @@ provider:
       values:
         template: ./helm/runtime_values.tpl
         # output: ./runtime_values.yaml
+        overrides:
+          platform:
+            minikube:
+              servicetype: NodePort
       requirements:
         linux:
           - helm:
               name: helm
               version: v2.4.2
               url: wget https://storage.googleapis.com/kubernetes-helm/helm-$VERSION-linux-amd64.tar.gz
+
   registry:
     gcr:
       name: gcr
