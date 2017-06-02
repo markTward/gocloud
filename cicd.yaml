@@ -13,7 +13,7 @@ config:
       id: helm
       enabled: true
     platform:
-      id: minikube
+      id: gke
       enabled: true
 
 app:
@@ -23,7 +23,7 @@ app:
 provider:
   cicd:
     repo: https://github.com/markTward/gocloud-cicd.git
-    branch: master
+    branch: mk
     clonedir: github.com/markTward/gocloud-cicd
   ci:
     travis:
