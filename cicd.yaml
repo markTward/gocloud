@@ -4,7 +4,7 @@ config:
   dryrun: false
   provider:
     registry:
-      id: gcr
+      id: docker
       enabled: true
     ci:
       id: travis
@@ -28,24 +28,31 @@ provider:
   ci:
     travis:
       name: travis
-      plan: X
   platform:
+    minikube:
+      name: minikube
+      context: minikube
     gke:
       name: gke
       project: k8sdemo-159622
       cluster: k0
       computezone: us-west1-a
       keyfile: ./client-secret.json
+      context: gke_k8sdemo-159622_us-west1-a_k0
   cd:
     helm:
       name: helm
-      version: v2.4.1
+      version: v2.4.2
       release: gocloud
       namespace: gocloud
       chartpath: helm/gocloud/
       values:
         template: ./helm/runtime_values.tpl
         # output: ./runtime_values.yaml
+        overrides:
+          platform:
+            minikube:
+              servicetype: NodePort
   registry:
     gcr:
       name: gcr
