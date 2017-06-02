@@ -42,7 +42,6 @@ provider:
   cd:
     helm:
       name: helm
-      // TODO: retire top-level version once install requirements cmd ready
       version: v2.4.2
       release: gocloud
       namespace: gocloud
@@ -50,6 +49,10 @@ provider:
       values:
         template: ./helm/runtime_values.tpl
         # output: ./runtime_values.yaml
+        overrides:
+          platform:
+            minikube:
+              servicetype: NodePort
   registry:
     gcr:
       name: gcr
