@@ -4,7 +4,7 @@ config:
   dryrun: false
   provider:
     registry:
-      id: gcr
+      id: docker
       enabled: true
     ci:
       id: travis
@@ -13,7 +13,7 @@ config:
       id: helm
       enabled: true
     platform:
-      id: gke
+      id: minikube
       enabled: true
 
 app:
@@ -28,18 +28,22 @@ provider:
   ci:
     travis:
       name: travis
-      plan: X
   platform:
+    minikube:
+      name: minikube
+      context: minikube
     gke:
       name: gke
       project: k8sdemo-159622
       cluster: k0
       computezone: us-west1-a
       keyfile: ./client-secret.json
+      context: gke_k8sdemo-159622_us-west1-a_k0
   cd:
     helm:
       name: helm
-      version: v2.4.1
+      // TODO: retire top-level version once install requirements cmd ready
+      version: v2.4.2
       release: gocloud
       namespace: gocloud
       chartpath: helm/gocloud/
