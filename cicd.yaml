@@ -23,7 +23,7 @@ app:
 provider:
   cicd:
     repo: https://github.com/markTward/gocloud-cicd.git
-    branch: mk
+    branch: master
     clonedir: github.com/markTward/gocloud-cicd
   ci:
     travis:
