@@ -3,14 +3,14 @@ sudo: required
 go:
 - 1.8.x
 cache:
+  pip: true
   directories:
     - $HOME/google-cloud-sdk/
-    - $HOME/.cache/pip
 services:
 - docker
 before_install:
 # python yaml required for parsing cicd.yaml into json
-- pip install pyyaml
+- pip install --upgrade pyyaml
 - sudo apt-get update -qq
 - sudo apt-get install -y jq
 # parse cicd config as json for setting of install env vars
@@ -47,7 +47,6 @@ install:
 - which kubectl || true
 - gcloud version
 - kubectl version --client=true || true
-- exit 1
 before_script:
 # decrypt credentials
 - openssl aes-256-cbc -K $encrypted_2a9422d072d6_key -iv $encrypted_2a9422d072d6_iv -in credentials.tar.gz.enc -out credentials.tar.gz -d
@@ -69,6 +68,7 @@ script:
 - go test -v ./...
 after_success:
 # TODO: move build to Makefile; Dockerfile a configurable element
+- exit 1
 - DOCKER_COMMIT_TAG=${TRAVIS_COMMIT::7}
 - docker build -t $GOCLOUD_APP_NAME:$DOCKER_COMMIT_TAG -f Dockerfile .
 - if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ]; then GOCLOUD_PULL_REQUEST="--pr $TRAVIS_PULL_REQUEST"; fi
