@@ -42,7 +42,7 @@ install:
 - GOCLOUD_CICD_KUBECTL_VERSION=$(echo $GOCLOUD_CICD_JSON | jq -r '.provider.platform.gke.requirements.linux | add.kubectl.version')
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; wget -qO- https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-$GOCLOUD_CICD_GCLOUD_VERSION-linux-x86_64.tar.gz | tar xvz -C $HOME; fi
 - source $HOME/google-cloud-sdk/path.bash.inc
-- sudo wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$GOCLOUD_CICD_KUBECTL_VERSION/bin/linux/amd64/kubectl && chmod +x /usr/local/bin/kubectl
+- sudo wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$GOCLOUD_CICD_KUBECTL_VERSION/bin/linux/amd64/kubectl && sudo chmod +x /usr/local/bin/kubectl
 - which gcloud || true
 - which kubectl || true
 - gcloud version
