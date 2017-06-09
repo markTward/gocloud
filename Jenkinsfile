@@ -11,8 +11,9 @@ node('k8s') {
     sh 'ls -la'
 
     org.yaml.snakeyaml.Yaml parser = new org.yaml.snakeyaml.Yaml()
-    List example = parser.load(("./cicd.yaml" as File).text)
+    def config = parser.load(("./cicd.yaml" as File).text)
 
-    println example
+    println "after yaml load"
+    println config
 
 }
