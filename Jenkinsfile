@@ -5,13 +5,8 @@ node('k8s') {
 
     checkout scm
 
-    org.yaml.snakeyaml.Yaml parser = new org.yaml.snakeyaml.Yaml()
-    def config = parser.load(("./cicd.yaml" as File).text)
-
+    def inputFile = readFile('./cicd.json')
+    def config = new groovy.json.JsonSlurperClassic().parseText(inputFile)
     println "pipeline config ==> ${config}"
-
-    sh 'ls -la'
-
-
 
 }
