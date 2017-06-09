@@ -5,11 +5,13 @@ node('k8s') {
 
     checkout scm
 
-    sh 'ls -la'
-
     org.yaml.snakeyaml.Yaml parser = new org.yaml.snakeyaml.Yaml()
     def config = parser.load(("./cicd.yaml" as File).text)
 
     println "pipeline config ==> ${config}"
+
+    sh 'ls -la'
+
+
 
 }
