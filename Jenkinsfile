@@ -10,4 +10,9 @@ node('k8s') {
     checkout scm
     sh 'ls -la'
 
+    org.yaml.snakeyaml.Yaml parser = new org.yaml.snakeyaml.Yaml()
+    List example = parser.load(("./cicd.yaml" as File).text)
+
+    example.each{println it.subject}
+
 }
