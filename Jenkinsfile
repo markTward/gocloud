@@ -1,12 +1,17 @@
 node('k8s') {
 
-    sh 'env | sort'
-    sh 'pwd'
+    stage("preparation") {
+        sh 'env | sort'
+        sh 'pwd'
 
-    checkout scm
+        checkout scm
 
-    def inputFile = readFile('./cicd.json')
-    def config = new groovy.json.JsonSlurperClassic().parseText(inputFile)
-    println "pipeline config ==> ${config}"
+        def config = readYaml file: './cicd.yaml'
+        println "Config CICD ==> ${config}"
+    }
+
+    stage("scope test") {
+        println "Config CICD ==> ${config}"
+    }
 
 }
