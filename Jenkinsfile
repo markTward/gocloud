@@ -18,15 +18,18 @@ volumes:[
 
         stage('setup') {
             sh 'pwd'
-            sh 'ls -la'
             sh 'env | sort'
-
             println "Config CICD ==> ${config}"
+            println "get CICD tools ${config.provider.cicd.repo}@${config.provider.cicd.branch}"
+            git branch: config.provider.cicd.branch, url: config.provider.cicd.repo}
+            sh 'ls -la'
+            sh 'cd ./gocloud-cicd'
+            sh 'ls -la'
+            sh "cd ${env.WORKSPACE}"
 
         }
 
         stage ('test') {
-
             container('golang') {
                 sh 'go env'
                 sh 'ls -la'
@@ -37,8 +40,11 @@ volumes:[
 
         stage ('build') {
             container('docker') {
+                sh 'docker version'
                 println "build image: ${config.app.name}:${gitCommit}"
                 sh "docker build -t ${config.app.name}:${gitCommit} -f Dockerfile ."
+                sh "docker tag ${config.app.name}:${gitCommit} marktward/${config.app.name}:${gitCommit}"
+                sh "docker push marktward/${config.app.name}:${gitCommit}"
             }
         }
 
