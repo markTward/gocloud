@@ -9,23 +9,23 @@ volumes:[
 
     node('jenkins-pipeline') {
         checkout scm
-
-        // sh 'git rev-parse --short HEAD > .git/commit-id'
-        // gitCommit = readFile('.git/commit-id')
+        def pwd = pwd()
+        sh "pwd after checkout scm ==> ${pwd}"
+        sh 'ls -la'
 
         def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
         def config = readYaml file: './cicd.yaml'
 
         stage('setup') {
-            sh 'pwd'
+            sh "pwd in setup ==> ${pwd}"
+            sh 'ls -la'
             sh 'env | sort'
             println "Config CICD ==> ${config}"
             println "get CICD tools ${config.provider.cicd.repo}@${config.provider.cicd.branch}"
             git branch: config.provider.cicd.branch, url: config.provider.cicd.repo
+            println "ls -la after checkout gocloud-cicd"
             sh 'ls -la'
-            sh 'cd ./gocloud-cicd'
-            sh 'ls -la'
-            sh "cd ${env.WORKSPACE}"
+            // sh "cd ${env.WORKSPACE}"
 
         }
 
