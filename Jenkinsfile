@@ -12,13 +12,24 @@ volumes:[
         def config = readYaml file: './cicd.yaml'
 
         stage('setup') {
+            sh 'pwd'
+            sh 'ls -la'
+            sh 'env | sort'
+
             println "Config CICD ==> ${config}"
+
         }
 
         stage ('test') {
+
             container('golang') {
-                sh 'go version'
+                sh 'go env'
+                sh 'ls -la'
+                sh 'go get -d -t -v -race ./...'
+                sh 'go test -v ./...'
+                sh 'go install .'
             }
         }
+
     }
 }
