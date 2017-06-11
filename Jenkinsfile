@@ -13,8 +13,7 @@ volumes:[
         // sh 'git rev-parse --short HEAD > .git/commit-id'
         // gitCommit = readFile('.git/commit-id')
 
-        gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
-
+        def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
         def config = readYaml file: './cicd.yaml'
 
         stage('setup') {
@@ -38,8 +37,8 @@ volumes:[
 
         stage ('build') {
             container('docker') {
-                println 'build image: ${config.app.name}:${gitCommit}'
-                // sh 'docker build -t ${config.app.name}:${gitCommit} -f Dockerfile .'
+                println "build image: ${config.app.name}:${gitCommit}""
+                sh "docker build -t ${config.app.name}:${gitCommit} -f Dockerfile ."
             }
         }
 
