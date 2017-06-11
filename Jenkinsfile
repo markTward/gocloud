@@ -17,7 +17,7 @@ volumes:[
         def config = readYaml file: './cicd.yaml'
 
         stage('setup') {
-            sh "pwd in setup ==> ${pwd}"
+            println "pwd in setup ==> ${pwd}"
             sh 'ls -la'
             sh 'env | sort'
             println "Config CICD ==> ${config}"
@@ -25,8 +25,6 @@ volumes:[
             git branch: config.provider.cicd.branch, url: config.provider.cicd.repo
             println "ls -la after checkout gocloud-cicd"
             sh 'ls -la'
-            // sh "cd ${env.WORKSPACE}"
-
         }
 
         stage ('test') {
