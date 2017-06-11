@@ -37,7 +37,7 @@ volumes:[
 
         stage ('build') {
             container('docker') {
-                println "build image: ${config.app.name}:${gitCommit}""
+                println "build image: ${config.app.name}:${gitCommit}"
                 sh "docker build -t ${config.app.name}:${gitCommit} -f Dockerfile ."
             }
         }
