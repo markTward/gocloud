@@ -10,8 +10,10 @@ volumes:[
     node('jenkins-pipeline') {
         checkout scm
 
-        sh 'git rev-parse --short HEAD > .git/commit-id'
-        commit_id = readFile('.git/commit-id')
+        // sh 'git rev-parse --short HEAD > .git/commit-id'
+        // gitCommit = readFile('.git/commit-id')
+
+        gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
 
         def config = readYaml file: './cicd.yaml'
 
@@ -36,7 +38,8 @@ volumes:[
 
         stage ('build') {
             container('docker') {
-                sh 'docker build -t ${config.app.name}:${commit_id} -f Dockerfile .'
+                println 'build image: ${config.app.name}:${gitCommit}'
+                // sh 'docker build -t ${config.app.name}:${gitCommit} -f Dockerfile .'
             }
         }
 
