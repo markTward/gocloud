@@ -10,7 +10,7 @@ volumes:[
     node('jenkins-pipeline') {
         checkout scm
         def pwd = pwd()
-        sh "pwd after checkout scm ==> ${pwd}"
+        println "pwd after checkout scm ==> ${pwd}"
         sh 'ls -la'
 
         def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().take(7)
