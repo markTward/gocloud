@@ -21,7 +21,7 @@ volumes:[
             sh 'env | sort'
             println "Config CICD ==> ${config}"
             println "get CICD tools ${config.provider.cicd.repo}@${config.provider.cicd.branch}"
-            git branch: config.provider.cicd.branch, url: config.provider.cicd.repo}
+            git branch: config.provider.cicd.branch, url: config.provider.cicd.repo
             sh 'ls -la'
             sh 'cd ./gocloud-cicd'
             sh 'ls -la'
