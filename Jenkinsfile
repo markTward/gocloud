@@ -17,6 +17,10 @@ volumes:[
             sh 'pwd'
             sh 'ls -la'
             sh 'env | sort'
+            dir('gocloud-cicd') {
+                git url: 'https://github.com/markTward/gocloud-cicd.git', branch: 'jenkins'
+            }
+            sh 'ls -la'
         }
 
         stage ('test') {
@@ -34,7 +38,7 @@ volumes:[
                 println "build image: ${config.app.name}:${gitCommit}"
                 sh "docker build -t ${config.app.name}:${gitCommit} -f Dockerfile ."
                 sh "docker tag ${config.app.name}:${gitCommit} marktward/${config.app.name}:${gitCommit}"
-                sh "docker push marktward/${config.app.name}:${gitCommit}"
+                //sh "docker push marktward/${config.app.name}:${gitCommit}"
             }
         }
 
