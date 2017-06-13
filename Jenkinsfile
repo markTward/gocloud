@@ -1,7 +1,7 @@
 podTemplate(label: 'jenkins-pipeline', containers: [
     containerTemplate(name: 'docker', image: 'docker:1.11.1', command: 'cat', ttyEnabled: true),
     containerTemplate(name: 'golang', image: 'golang:1.8.1', command: 'cat', ttyEnabled: true),
-    containerTemplate(name: 'cicd', image: 'marktward/gocloud-cicd:minikube', command: 'cat', ttyEnabled: true),
+    containerTemplate(name: 'cicd', image: 'marktward/gocloud-cicd:mk', command: 'cat', ttyEnabled: true),
 ],
 volumes:[
     hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock'),
@@ -26,9 +26,9 @@ volumes:[
         stage ('test') {
             container('golang') {
                 sh 'go env'
-                sh 'ls -la'
-                sh 'go get -d -t -v -race ./...'
-                sh 'go test -v ./...'
+                //sh 'ls -la'
+                //sh 'go get -d -t -v -race ./...'
+                //sh 'go test -v ./...'
             }
         }
 
