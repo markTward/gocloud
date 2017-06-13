@@ -36,8 +36,8 @@ volumes:[
             container('docker') {
                 sh 'docker version'
                 println "build image: ${config.app.name}:${gitCommit}"
-                sh "docker build -t ${config.app.name}:${gitCommit} -f Dockerfile ."
-                sh "docker tag ${config.app.name}:${gitCommit} marktward/${config.app.name}:${gitCommit}"
+                //sh "docker build -t ${config.app.name}:${gitCommit} -f Dockerfile ."
+                //sh "docker tag ${config.app.name}:${gitCommit} marktward/${config.app.name}:${gitCommit}"
                 sh "docker images"
 
                 //withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerHub',
