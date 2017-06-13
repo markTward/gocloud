@@ -52,6 +52,7 @@ volumes:[
             container('cicd') {
                 sh 'gocloud-cicd deploy --help'
                 sh 'docker version'
+                sh 'docker images'
             }
         }
     }
