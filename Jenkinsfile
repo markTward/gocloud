@@ -53,6 +53,8 @@ volumes:[
                 sh 'gocloud-cicd deploy --help'
                 sh 'docker version'
                 sh 'docker images'
+                sh 'which gcloud && gcloud version'
+                sh 'which kubectl && kubectl version'
             }
         }
     }
